@@ -1,0 +1,50 @@
+package com.mle.audio.meta
+
+import java.nio.file.{Files, Path}
+import com.mle.util.Log
+import org.jaudiotagger.audio.AudioFileIO
+import scala.concurrent.duration._
+
+/**
+ * @author Michael
+ */
+case class SongMeta(media: MediaInfo, tags: SongTags)
+
+object SongMeta extends Log {
+  def fromPath(path: Path): SongMeta = fromPath(path, Option(path.getRoot).getOrElse(path))
+
+  def fromPath(absolutePath: Path, root: Path): SongMeta = {
+    val audioFile = AudioFileIO read absolutePath.toFile
+    val duration = audioFile.getAudioHeader.getTrackLength.toDouble.seconds
+    val tags = SongTags.fromAudioFile(audioFile).getOrElse(SongTags.fromFilePath(absolutePath, root))
+    SongMeta(MediaInfo(absolutePath.toUri, duration, Files size absolutePath), tags)
+  }
+
+  def fromFilePath(path: Path, root: Path) = {
+    val relativePath = root relativize path
+    val maybeParent = Option(relativePath.getParent)
+    val title = titleFromFileName(path)
+    val album = maybeParent.map(p => Option(p.getFileName).map(_.toString)).flatten.getOrElse("")
+    // Both getParent and getFileName may return null. Thanks, Java.
+    val artist = maybeParent.map(p => {
+      Option(p.getParent).map(pp => {
+        Option(pp.getFileName).map(_.toString).getOrElse(album)
+      }).getOrElse(album)
+    }).getOrElse(album)
+    SongMeta(MediaInfo.fromPath(path), SongTags(title, album, artist))
+  }
+
+  def titleFromFileName(path: Path) = {
+    val fileName = Option(path.getFileName).map(_.toString).getOrElse("")
+    if (fileName endsWith ".mp3") fileName.slice(0, fileName.size - 4) else fileName
+  }
+
+  def titleOf(absolutePath: Path) = {
+    if (Files isDirectory absolutePath) {
+      titleFromFileName(absolutePath)
+    } else {
+      SongTags.fromTags(absolutePath).map(_.title).filter(_.nonEmpty)
+        .getOrElse(titleFromFileName(absolutePath))
+    }
+  }
+}
