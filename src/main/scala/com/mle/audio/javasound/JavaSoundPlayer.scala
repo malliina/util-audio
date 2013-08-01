@@ -85,12 +85,16 @@ abstract class JavaSoundPlayer(val media: MediaInfo)
    */
   private def seekBytes(byteCount: Long) = {
     val wasPlaying = lineData.state == PlayerStates.Started
+    val wasMute = mute
+//    val previousGain = gain
     val seekedLine = newLine(url)
     val bytesSkipped = seekedLine skip byteCount
     resetLine(seekedLine)
     if (wasPlaying) {
       play()
     }
+    mute(wasMute)
+//    gain(previousGain)
     bytesSkipped
   }
 
