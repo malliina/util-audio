@@ -1,25 +1,45 @@
 package com.mle.audio
 
-import com.mle.audio.meta.SongMeta
 
 /**
- * @author Michael
+ *
+ * @tparam T type of playlist item
  */
-trait IPlaylist {
-  def songList: Seq[SongMeta]
+trait IPlaylist[T] {
+  def songList: Seq[T]
 
   def index: Int
 
   def index_=(newIndex: Int)
 
-  def current: Option[SongMeta]
+  /**
+   *
+   * @return the current track wrapped in an Option if any, or None otherwise
+   */
+  def current: Option[T]
 
-  def next: Option[SongMeta]
+  /**
+   *
+   * @return the next track wrapped in an Option if any, or None otherwise
+   */
+  def next: Option[T]
 
-  def prev: Option[SongMeta]
+  /**
+   *
+   * @return the previous track wrapped in an Option if any, or None otherwise
+   */
+  def prev: Option[T]
 
-  def add(song: SongMeta)
+  /**
+   *
+   * @param song to add
+   */
+  def add(song: T)
 
+  /**
+   *
+   * @param pos index of track to remove
+   */
   def delete(pos: Int)
 
   def clear()
