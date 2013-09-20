@@ -8,11 +8,11 @@ import sbt.Keys._
 object BuildBuild extends Build {
   // "build.sbt" goes here
   override lazy val settings = super.settings ++ Seq(
-    scalaVersion := "2.9.2",
+    scalaVersion := "2.10.2",
     resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
     resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
     scalacOptions ++= Seq("-unchecked", "-deprecation"),
-    addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.4.0")
+    addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.5.1")
   )
 
   override lazy val projects = Seq(root)
