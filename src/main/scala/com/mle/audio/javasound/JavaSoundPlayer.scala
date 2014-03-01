@@ -2,7 +2,7 @@ package com.mle.audio.javasound
 
 import com.mle.util.Log
 import concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import PlaybackContext.executionContext
 import java.nio.file.Path
 import java.net.URL
 import scala.concurrent.duration.Duration
@@ -86,7 +86,7 @@ abstract class JavaSoundPlayer(val media: MediaInfo)
   private def seekBytes(byteCount: Long) = {
     val wasPlaying = lineData.state == PlayerStates.Started
     val wasMute = mute
-//    val previousGain = gain
+    //    val previousGain = gain
     val seekedLine = newLine(url)
     val bytesSkipped = seekedLine skip byteCount
     resetLine(seekedLine)
@@ -94,7 +94,7 @@ abstract class JavaSoundPlayer(val media: MediaInfo)
       play()
     }
     mute(wasMute)
-//    gain(previousGain)
+    //    gain(previousGain)
     bytesSkipped
   }
 
@@ -116,7 +116,7 @@ abstract class JavaSoundPlayer(val media: MediaInfo)
   }
 
   private def startPlayThread() {
-    val data = new Array[Byte](4096)
+    val data = new Array[Byte](16384)
     var bytesRead = 0
     while (bytesRead != -1 && active) {
       // this is blocking, i guess

@@ -6,8 +6,10 @@ import javax.sound.sampled.{LineEvent, AudioSystem}
 import com.mle.audio.PlayerStates
 import com.mle.audio.PlayerStates._
 
-class LineData(url: URL, onLineEvent: LineEvent => Unit = e => ())
-  extends JavaSoundBase with Log {
+class LineData(url: URL, onLineEvent: LineEvent => Unit = _ => ())
+  extends JavaSoundBase
+  with Log {
+
   private val urlIn = AudioSystem.getAudioInputStream(url)
   private val baseFormat = urlIn.getFormat
   val decodedFormat = toDecodedFormat(baseFormat)
