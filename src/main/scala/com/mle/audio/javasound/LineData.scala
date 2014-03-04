@@ -2,19 +2,22 @@ package com.mle.audio.javasound
 
 import java.net.URL
 import com.mle.util.Log
-import javax.sound.sampled.{LineEvent, AudioSystem}
+import javax.sound.sampled.{AudioInputStream, LineEvent, AudioSystem}
 import com.mle.audio.PlayerStates
-import com.mle.audio.PlayerStates._
+import java.io.ByteArrayInputStream
+import scala.util.Try
 
-class LineData(url: URL, onLineEvent: LineEvent => Unit = _ => ())
+class LineData(inStream: AudioInputStream, onLineEvent: LineEvent => Unit = _ => ())
   extends JavaSoundBase
   with Log {
+  def this(url: URL) = this(AudioSystem.getAudioInputStream(url))
 
-  private val urlIn = AudioSystem.getAudioInputStream(url)
-  private val baseFormat = urlIn.getFormat
+  def this(bytes: Array[Byte]) = this(AudioSystem.getAudioInputStream(new ByteArrayInputStream(bytes)))
+
+  private val baseFormat = inStream.getFormat
   val decodedFormat = toDecodedFormat(baseFormat)
   // this is read
-  val decodedIn = AudioSystem.getAudioInputStream(decodedFormat, urlIn)
+  val decodedIn = AudioSystem.getAudioInputStream(decodedFormat, inStream)
   // this is written to during playback
   val audioLine = openLine(decodedFormat, onLineEvent)
 
@@ -42,5 +45,6 @@ class LineData(url: URL, onLineEvent: LineEvent => Unit = _ => ())
     audioLine.stop()
     audioLine.close()
     decodedIn.close()
+    Try(inStream.close())
   }
 }

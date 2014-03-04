@@ -6,5 +6,5 @@ package com.mle.audio
 trait StateAwarePlayer extends IPlayer {
   def state: PlayerStates.PlayerState
 
-  def onEndOfMedia()
+  def onEndOfMedia(): Unit = ()
 }

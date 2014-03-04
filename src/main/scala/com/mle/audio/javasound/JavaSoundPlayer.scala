@@ -2,7 +2,7 @@ package com.mle.audio.javasound
 
 import com.mle.util.Log
 import concurrent.Future
-import PlaybackContext.executionContext
+import scala.concurrent.ExecutionContext.Implicits.global
 import java.nio.file.Path
 import java.net.URL
 import scala.concurrent.duration.Duration
@@ -18,7 +18,7 @@ import com.mle.audio.meta.MediaInfo
  *
  * @param media
  */
-abstract class JavaSoundPlayer(val media: MediaInfo)
+class JavaSoundPlayer(val media: MediaInfo)
   extends JavaSoundBase
   with IPlayer
   with JavaSoundRichPlayer
@@ -35,7 +35,7 @@ abstract class JavaSoundPlayer(val media: MediaInfo)
 
   def audioLine = lineData.audioLine
 
-  def newLine(source: URL) = new LineData(source)
+  def newLine(source: URL): LineData = new LineData(source)
 
   def stop() {
     active = false
@@ -98,9 +98,9 @@ abstract class JavaSoundPlayer(val media: MediaInfo)
     bytesSkipped
   }
 
-  private def resetLine(line: LineData) {
+  private def resetLine(newLineData: LineData) {
     closeLine()
-    lineData = line
+    lineData = newLineData
   }
 
   private def startPlayback() {
@@ -120,7 +120,7 @@ abstract class JavaSoundPlayer(val media: MediaInfo)
     var bytesRead = 0
     while (bytesRead != -1 && active) {
       // this is blocking, i guess
-      bytesRead = lineData.decodedIn.read(data, 0, data.length)
+      bytesRead = lineData.decodedIn.read(data)
       if (bytesRead != -1) {
         audioLine.write(data, 0, bytesRead)
       } else {

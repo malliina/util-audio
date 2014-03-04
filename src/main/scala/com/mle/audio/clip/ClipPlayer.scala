@@ -45,8 +45,6 @@ class ClipPlayer(media: URI)
   val gainControl = clip.getControl(FloatControl.Type.MASTER_GAIN)
     .asInstanceOf[FloatControl]
 
-  def onEndOfMedia() {}
-
   def play() {
     clip.start()
   }
