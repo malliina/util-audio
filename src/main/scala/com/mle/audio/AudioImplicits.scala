@@ -9,6 +9,7 @@ import scala.concurrent.duration.Duration
  * @author Michael
  */
 object AudioImplicits {
+  // TODO implicit classes yo scala 2.10
   implicit def lineEvent2listener(onEvent: LineEvent => Unit) = new LineListener {
     def update(event: LineEvent) {
       onEvent(event)

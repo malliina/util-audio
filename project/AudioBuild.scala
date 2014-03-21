@@ -11,7 +11,7 @@ object AudioBuild extends Build {
     sbt.Keys.fork in Test := true,
     libraryDependencies ++= Seq(
       "com.github.malliina" %% "util" % "0.7.1",
-      "org.scalatest" %% "scalatest" % "1.9.1" % "test",
+      "org.scalatest" %% "scalatest" % "2.0" % "test",
       "joda-time" % "joda-time" % "2.1",
       "org.joda" % "joda-convert" % "1.3",
       "org" % "jaudiotagger" % "2.0.3"),

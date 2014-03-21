@@ -1,15 +1,13 @@
 package com.mle.audio.javasound
 
 import com.mle.util.Log
-import concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 import java.nio.file.Path
 import java.net.URL
 import scala.concurrent.duration.Duration
 import com.mle.audio._
 import scala.Some
 import com.mle.audio.meta.MediaInfo
-
 
 /**
  * The user needs to provide the media length and size to enable seek functionality.
@@ -18,7 +16,7 @@ import com.mle.audio.meta.MediaInfo
  *
  * @param media
  */
-class JavaSoundPlayer(val media: MediaInfo)
+class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = ExecutionContexts.defaultPlaybackContext)
   extends JavaSoundBase
   with IPlayer
   with JavaSoundRichPlayer
