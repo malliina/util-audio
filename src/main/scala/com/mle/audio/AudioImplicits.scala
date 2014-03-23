@@ -1,6 +1,5 @@
 package com.mle.audio
 
-import org.joda.time.Period
 import javax.sound.sampled.{LineListener, LineEvent}
 import scala.concurrent.duration.Duration
 
@@ -9,23 +8,25 @@ import scala.concurrent.duration.Duration
  * @author Michael
  */
 object AudioImplicits {
-  // TODO implicit classes yo scala 2.10
   implicit def lineEvent2listener(onEvent: LineEvent => Unit) = new LineListener {
-    def update(event: LineEvent) {
-      onEvent(event)
-    }
+    def update(event: LineEvent): Unit = onEvent(event)
   }
 
-  implicit def dur2readable(t: Duration) = new {
-    val inSeconds = t.toSeconds.toInt
-    private val period = Period.seconds(inSeconds).normalizedStandard()
+  implicit class RichDuration(val t: Duration) {
+    private val inSeconds = t.toSeconds.toInt
+
+    private val secondsPart = inSeconds % 60
+    private val minutesPart = (inSeconds - secondsPart) / 60 % 60
+    private val hoursPart = inSeconds / 3600
+
     private val stringified =
       if (inSeconds >= 3600) {
-        "%02d:%02d:%02d".format(period.getHours, period.getMinutes, period.getSeconds)
+        "%02d:%02d:%02d".format(hoursPart, minutesPart, secondsPart)
       } else {
-        "%02d:%02d".format(period.getMinutes, period.getSeconds)
+        "%02d:%02d".format(minutesPart, secondsPart)
       }
 
     def readable = stringified
   }
+
 }

@@ -3,7 +3,8 @@ package com.mle.audio.tests
 import org.scalatest.FunSuite
 import javazoom.jl.player.Player
 import java.io.{BufferedInputStream, FileInputStream}
-import actors.Futures
+import scala.concurrent.Future
+import com.mle.audio.ExecutionContexts.defaultPlaybackContext
 
 /**
  * @author Michael
@@ -20,7 +21,7 @@ class JLPlayerTests extends FunSuite {
     val path = TestTracks.difficultSongs(index)
     val bis = new BufferedInputStream(new FileInputStream(path.toFile))
     val p = new Player(bis)
-    Futures.future(p.play())
+    Future(p.play())
     Thread sleep sleepDuration
   }
 }
