@@ -13,11 +13,11 @@ import com.mle.audio.clip.ClipPlayer
  */
 class Mp3Tests extends FunSuite with Log {
   test("mp3 playback") {
-    val musicFolder = Paths.get( "")
+    val musicFolder = Paths.get("")
     val files = FileUtilities.listPaths(musicFolder)
     val mp3files = for (file <- files
-                        if (Files.isRegularFile(file))
-                        if (file.getFileName.toString.endsWith(".mp3"))
+                        if Files.isRegularFile(file)
+                        if file.getFileName.toString.endsWith(".mp3")
     ) yield file
     var processed = 0
     val (succeeded, failed) = mp3files.par.partition(mp3 => {
