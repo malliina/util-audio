@@ -26,18 +26,23 @@ trait JavaSoundRichPlayer extends RichPlayer with Seekable with Log {
    *
    * @return microseconds since the line was opened
    */
-  private def microsSinceLineOpened = {
+  private def microsSinceLineOpened4 = {
     val microsOrMillis = audioLine.getMicrosecondPosition
-    val multiplier = if (microsOrMillis > 10000 && microsOrMillis < 1000000) 1000L else 1L
+    val multiplier = if (microsOrMillis > 1000 && microsOrMillis < 1000000) 1000L else 1L
     multiplier * microsOrMillis
   }
 
-  private def microsSinceLineOpened2 = framesToMilliseconds(audioLine.getLongFramePosition)
+  private def microsSinceLineOpened = framesToMicroseconds(audioLine.getLongFramePosition)
+
+  private def microsSinceLineOpened2 = {
+    val frameSizeBytes = audioLine.getFormat.getFrameSize
+    val positionInBytes = audioLine.getLongFramePosition * frameSizeBytes
+    (1.0 * positionInBytes / media.bytes) * media.duration.toMicros
+  }
 
   // http://stackoverflow.com/questions/9470148/how-do-you-play-a-long-audioclip see if this formula works better
-  private def framesToMilliseconds(frames: Long): Long =
-    (frames / audioLine.getFormat.getSampleRate.toLong) * 1000
-
+  private def framesToMicroseconds(frames: Long): Long =
+    (frames / audioLine.getFormat.getSampleRate.toLong) * 1000000L
 
   def position: Duration = {
     val ret = (startedFromMicros + microsSinceLineOpened).micros
@@ -51,18 +56,13 @@ trait JavaSoundRichPlayer extends RichPlayer with Seekable with Log {
    * Adjusts the volume
    * @param level [0.0F, 1.0F]
    */
-  def gain(level: Float) {
-    gainControl map (c => c.setValue(dbValue(level, c)))
-  }
+  def gain(level: Float): Unit =
+    gainControl foreach (c => c.setValue(dbValue(level, c)))
 
   def hasGainControl = Option(audioLine)
     .exists(_.isControlSupported(FloatControl.Type.MASTER_GAIN))
 
-  def gain = gainControl.map(c => {
-    val ret = gainValue(c)
-    log.info(s"Converted gain value of ${c.getValue} to $ret. Min: ${c.getMinimum}, max: ${c.getMaximum}")
-    ret
-  }).getOrElse {
+  def gain = gainControl.map(gainValue).getOrElse {
     log.info(s"Unable to find gain control; returning 0f as gain.")
     0F
   }
