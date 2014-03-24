@@ -60,7 +60,7 @@ trait JavaSoundRichPlayer extends RichPlayer with Seekable with Log {
 
   def gain = gainControl.map(c => {
     val ret = gainValue(c)
-    log.info(s"Converted gain value of ${c.getValue} to $ret")
+    log.info(s"Converted gain value of ${c.getValue} to $ret. Min: ${c.getMinimum}, max: ${c.getMaximum}")
     ret
   }).getOrElse {
     log.info(s"Unable to find gain control; returning 0f as gain.")
