@@ -60,13 +60,9 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
     startedFromNanos = bytesToTime(skippedBytes).toNanos
   }
 
-  def close() {
-    closeLine()
-  }
+  def close(): Unit = closeLine()
 
-  def onPlaybackException() {
-    onEndOfMedia()
-  }
+  def onPlaybackException() = onEndOfMedia()
 
   private def closeLine() {
     active = false
@@ -104,6 +100,7 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
   private def startPlayback() {
     active = true
     audioLine.start()
+    log.info(s"Starting playback of ${media.uri}")
     playThread = Some(Future(startPlayThread()).recover({
       // javazoom lib may throw at arbitrary playback moments
       case e: ArrayIndexOutOfBoundsException =>
@@ -113,7 +110,7 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
     }))
   }
 
-  private def startPlayThread() {
+  private def startPlayThread(): Unit = {
     val data = new Array[Byte](16384)
     var bytesRead = 0
     while (bytesRead != -1 && active) {
