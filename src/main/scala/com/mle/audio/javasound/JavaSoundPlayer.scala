@@ -57,7 +57,7 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
   def seek(pos: Duration) {
     val bytesPos = timeToBytes(pos)
     val skippedBytes = seekBytes(bytesPos)
-    startedFromNanos = bytesToTime(skippedBytes).toNanos
+    startedFromMicros = bytesToTime(skippedBytes).toMicros
   }
 
   def close(): Unit = closeLine()
@@ -67,7 +67,7 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
   private def closeLine() {
     active = false
     lineData.close()
-    startedFromNanos = 0L
+    startedFromMicros = 0L
   }
 
   /**

@@ -9,5 +9,5 @@ import java.util.concurrent.Executors
  */
 object ExecutionContexts {
   implicit val defaultPlaybackContext: ExecutionContext =
-    ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(3))
+    ExecutionContext.fromExecutorService(Executors.newCachedThreadPool())
 }

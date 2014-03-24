@@ -10,7 +10,7 @@ import com.mle.audio.meta.MediaInfo
 trait Seekable extends Log {
   // Helper variable for seeking, needed because java sound getters return the time since the line was opened,
   // which is not equivalent to the track position if the user has seeked.
-  var startedFromNanos = 0L
+  var startedFromMicros = 0L
 
   def media: MediaInfo
 
@@ -20,12 +20,12 @@ trait Seekable extends Log {
    * Inaccurate. VBR etc.
    */
   protected def timeToBytes(pos: Duration): Long = {
-    val ret = (1.0 * pos.toNanos / media.duration.toNanos * media.bytes).toLong
+    val ret = (1.0 * pos.toMicros / media.duration.toMicros * media.bytes).toLong
     log debug s"Seeking to position: ${pos.toSeconds} seconds which corresponds to $ret bytes out of ${media.bytes} total bytes"
     ret
   }
 
   protected def bytesToTime(bytes: Long): Duration = {
-    (1.0 * bytes / media.bytes * media.duration.toNanos).toLong.nanos
+    (1.0 * bytes / media.bytes * media.duration.toMicros).micros
   }
 }

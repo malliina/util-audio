@@ -14,10 +14,13 @@ trait JavaSoundRichPlayer extends RichPlayer with Seekable with Log {
   private val zeroGain = 0.4f
   private val maxGain = 1.0f
 
-  private def nanosSinceLineOpened =
-    audioLine.getMicrosecondPosition * 1000L
+  private def microsSinceLineOpened = audioLine.getMicrosecondPosition
 
-  def position = (startedFromNanos + nanosSinceLineOpened).nanoseconds
+  def position = {
+    val ret = (startedFromMicros + microsSinceLineOpened).micros
+    log.info(s"microsSinceLineOpened: $microsSinceLineOpened, as a Duration: ${microsSinceLineOpened.micros}, startedFromMicros: $startedFromMicros, as a Duration: ${startedFromMicros.micros}, position as micros: ${startedFromMicros + microsSinceLineOpened}, as a Duration: $ret, in seconds: ${ret.toSeconds}")
+    ret
+  }
 
   def gainControl = control[FloatControl](FloatControl.Type.MASTER_GAIN)
 
