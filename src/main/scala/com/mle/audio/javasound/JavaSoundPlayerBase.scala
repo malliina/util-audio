@@ -49,9 +49,14 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
   def canAdjustVolume = hasVolumeControl || hasGainControl
 
   def volume =
-    if (hasVolumeControl) volumeControlValue
-    else if (hasGainControl) (gainControlValue * 100).toInt
-    else {
+    if (hasVolumeControl) {
+      log.info(s"Returning volume of $volumeControlValue, from volume control with value: ${volumeControl.map(_.getValue).getOrElse(-1)}")
+      volumeControlValue
+    } else if (hasGainControl) {
+      val ret =  (gainControlValue * 100).toInt
+      log.info(s"Returning volume of $ret, from gain control with value: ${gainControl.map(_.getValue).getOrElse(-1)}")
+      ret
+    } else {
       log.info("Unable to find volume/gain control. Returning 0 as volume.")
       0
     }
@@ -114,13 +119,14 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
       ctrl setValue newValue
     })
 
-  private def internalVolumeValue(newVolume: Int, min: Float, max: Float): Float =
+  def internalVolumeValue(newVolume: Int, min: Float, max: Float): Float =
     min + 1.0F * newVolume / 100 * (max - min)
 
-  private def externalVolumeValue(volumeControl: FloatControl) = {
-    val min = volumeControl.getMaximum
-    val max = volumeControl.getMaximum
-    val volumePercentage = (volumeControl.getValue - min) / (max - min)
+  private def externalVolumeValue(volumeControl: FloatControl): Int =
+    externalVolumeValue(volumeControl.getValue, volumeControl.getMinimum, volumeControl.getMaximum)
+
+  def externalVolumeValue(internalValue: Float, min: Float, max: Float): Int = {
+    val volumePercentage = (internalValue - min) / (max - min)
     (volumePercentage * 100).toInt
   }
 
