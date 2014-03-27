@@ -33,6 +33,8 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
 
   def audioLine = lineData.audioLine
 
+  def controlDescriptions = audioLine.getControls.map(_.toString)
+
   def newLine(source: URL): LineData = new LineData(source)
 
   def stop() {

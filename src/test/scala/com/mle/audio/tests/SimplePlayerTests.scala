@@ -4,7 +4,7 @@ import org.scalatest.FunSuite
 import java.nio.file.Paths
 import com.mle.audio.javasound.JavaSoundPlayer
 import concurrent.duration._
-import com.mle.util.Scheduling
+import com.mle.util.{Util, Scheduling}
 
 /**
  *
@@ -28,4 +28,5 @@ class SimplePlayerTests extends FunSuite {
     player.play()
     Thread.sleep(5000)
   }
+
 }
