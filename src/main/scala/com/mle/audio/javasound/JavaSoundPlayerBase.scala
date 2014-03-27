@@ -44,22 +44,24 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
   private def framesToMicroseconds(frames: Long): Long =
     (frames / audioLine.getFormat.getSampleRate.toLong) * 1000000L
 
-  def position: Duration = {
-    val ret = (startedFromMicros + microsSinceLineOpened).micros
-    log.info(s"microsSinceLineOpened: $microsSinceLineOpened, position as micros: ${startedFromMicros + microsSinceLineOpened}, as a Duration: $ret, in seconds: ${ret.toSeconds}")
-    ret
-  }
+  def position: Duration = (startedFromMicros + microsSinceLineOpened).micros
 
   def canAdjustVolume = hasVolumeControl || hasGainControl
 
   def volume =
     if (hasVolumeControl) volumeControlValue
     else if (hasGainControl) (gainControlValue * 100).toInt
-    else 0
+    else {
+      log.info("Unable to find volume/gain control. Returning 0 as volume.")
+      0
+    }
 
   def volume_=(newVolume: Int): Unit = {
     if (hasVolumeControl) volumeControlValue(newVolume)
     else if (hasGainControl) gainControlValue(1.0F * newVolume / 100)
+    else {
+      log.info("Cannot set volume, because no volume control was found.")
+    }
   }
 
   // implements trait
@@ -96,12 +98,7 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
    * @return [0, 100]
    */
   private def volumeControlValue: Int =
-    volumeControl.map(ctrl => {
-      val min = ctrl.getMaximum
-      val max = ctrl.getMaximum
-      val volumePercentage = (ctrl.getValue - min) / (max - min)
-      (volumePercentage * 100).toInt
-    }).getOrElse {
+    volumeControl.map(externalVolumeValue).getOrElse {
       log.info("Unable to find volume control; returning 0 as volume")
       0
     }
@@ -113,12 +110,19 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
    */
   private def volumeControlValue(newVolume: Int): Unit =
     volumeControl.foreach(ctrl => {
-      val min = ctrl.getMaximum
-      val max = ctrl.getMaximum
-      val newValue = min + 1.0F * newVolume / 100 * (max - min)
+      val newValue = internalVolumeValue(newVolume, ctrl.getMinimum, ctrl.getMaximum)
       ctrl setValue newValue
     })
 
+  private def internalVolumeValue(newVolume: Int, min: Float, max: Float): Float =
+    min + 1.0F * newVolume / 100 * (max - min)
+
+  private def externalVolumeValue(volumeControl: FloatControl) = {
+    val min = volumeControl.getMaximum
+    val max = volumeControl.getMaximum
+    val volumePercentage = (volumeControl.getValue - min) / (max - min)
+    (volumePercentage * 100).toInt
+  }
 
   def muteControl = control[BooleanControl](BooleanControl.Type.MUTE)
 
