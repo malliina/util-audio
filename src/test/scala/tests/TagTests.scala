@@ -1,4 +1,4 @@
-package com.mle.audio.tests
+package tests
 
 import org.scalatest.FunSuite
 import org.jaudiotagger.audio.AudioFileIO

@@ -4,6 +4,7 @@ import java.nio.file.{Files, Path}
 import com.mle.util.Log
 import org.jaudiotagger.audio.AudioFileIO
 import scala.concurrent.duration._
+import com.mle.storage.StorageLong
 
 /**
  * @author Michael
@@ -17,7 +18,7 @@ object SongMeta extends Log {
     val audioFile = AudioFileIO read absolutePath.toFile
     val duration = audioFile.getAudioHeader.getTrackLength.toDouble.seconds
     val tags = SongTags.fromAudioFile(audioFile).getOrElse(SongTags.fromFilePath(absolutePath, root))
-    SongMeta(MediaInfo(absolutePath.toUri, duration, Files size absolutePath), tags)
+    SongMeta(MediaInfo(absolutePath.toUri, duration, (Files size absolutePath).bytes), tags)
   }
 
   def fromFilePath(path: Path, root: Path) = {

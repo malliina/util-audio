@@ -10,7 +10,7 @@ trait RichPlayer extends IPlayer {
 
   def position: Duration
 
-  def gain: Float
+  def volume: Int
 
   def mute: Boolean
 }

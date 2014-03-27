@@ -1,4 +1,4 @@
-package com.mle.audio.tests
+package tests
 
 import org.scalatest.FunSuite
 import com.mle.audio.javasound.JavaSoundPlayer
@@ -17,16 +17,14 @@ class ControlTests extends FunSuite {
   test("supported controls") {
     if (!Files.exists(tempFile)) {
       val resourceURL = Util.resourceOpt("mpthreetest.mp3")
-      resourceURL
-        .map(url => FileUtils.copyURLToFile(url, tempFile.toFile))
-        .getOrElse(throw new Exception(s"Resource not found: " + fileName))
-    }
-    if (Files.exists(tempFile)) {
-      val player = new JavaSoundPlayer(tempFile)
-      player.controlDescriptions.foreach(println)
-    } else {
-      throw new Exception(s"Unable to access $tempFile")
+      val url = resourceURL.getOrElse(throw new Exception(s"Resource not found: " + fileName))
+      FileUtils.copyURLToFile(url, tempFile.toFile)
+      if (!Files.exists(tempFile)) {
+        throw new Exception(s"Unable to access $tempFile")
+      }
     }
 
+    val player = new JavaSoundPlayer(tempFile)
+    assert(player.canAdjustVolume)
   }
 }

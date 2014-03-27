@@ -1,4 +1,4 @@
-package com.mle.audio.tests
+package tests
 
 import java.nio.file.Paths
 

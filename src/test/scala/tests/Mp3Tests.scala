@@ -1,11 +1,10 @@
-package com.mle.audio.tests
+package tests
 
 import org.scalatest.FunSuite
 import com.mle.util.{FileUtilities, Log}
 import java.nio.file.{Files, Paths}
 import javax.sound.sampled.{UnsupportedAudioFileException, AudioSystem}
 import java.io.IOException
-import com.mle.audio.clip.ClipPlayer
 
 
 /**

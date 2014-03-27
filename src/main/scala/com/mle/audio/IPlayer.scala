@@ -26,13 +26,12 @@ trait IPlayer extends AutoCloseable {
    */
   def seek(pos: Duration)
 
-  //  def gain: Float
-
   /**
-   * Adjusts the volume
-   * @param level [0.0,1.0]
+   * Adjusts the volume.
+   *
+   * @param level [0, 100]
    */
-  def gain(level: Float)
+  def volume(level: Int)
 
   /**
    * Mutes/unmutes the player.

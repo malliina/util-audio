@@ -3,11 +3,12 @@ package com.mle.audio.javasound
 import com.mle.util.Log
 import scala.concurrent.{ExecutionContext, Future}
 import java.nio.file.Path
-import java.net.URL
+import java.net.{URI, URL}
 import scala.concurrent.duration.Duration
 import com.mle.audio._
 import scala.Some
 import com.mle.audio.meta.MediaInfo
+import com.mle.storage.StorageSize
 
 /**
  * The user needs to provide the media length and size to enable seek functionality.
@@ -19,12 +20,15 @@ import com.mle.audio.meta.MediaInfo
 class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = ExecutionContexts.defaultPlaybackContext)
   extends JavaSoundBase
   with IPlayer
-  with JavaSoundRichPlayer
+  with JavaSoundPlayerBase
   with Seekable
   with StateAwarePlayer
   with AutoCloseable
   with Log {
+
   def this(media: Path) = this(MediaInfo fromPath media)
+
+  def this(uri: URI, duration: Duration, size: StorageSize) = this(MediaInfo(uri, duration, size))
 
   private val url = media.uri.toURL
   var lineData = newLine(url)

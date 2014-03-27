@@ -20,12 +20,12 @@ trait Seekable extends Log {
    * Inaccurate. VBR etc.
    */
   protected def timeToBytes(pos: Duration): Long = {
-    val ret = (1.0 * pos.toMicros / media.duration.toMicros * media.bytes).toLong
-    log debug s"Seeking to position: ${pos.toSeconds} seconds which corresponds to $ret bytes out of ${media.bytes} total bytes"
+    val ret = (1.0 * pos.toMicros / media.duration.toMicros * media.size.toBytes).toLong
+    log debug s"Seeking to position: ${pos.toSeconds} seconds which corresponds to $ret bytes out of ${media.size}"
     ret
   }
 
   protected def bytesToTime(bytes: Long): Duration = {
-    (1.0 * bytes / media.bytes * media.duration.toMicros).micros
+    (1.0 * bytes / media.size.toBytes * media.duration.toMicros).micros
   }
 }

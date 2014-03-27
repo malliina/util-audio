@@ -1,10 +1,10 @@
-package com.mle.audio.tests
+package tests
 
 import org.scalatest.FunSuite
 import java.nio.file.Paths
 import com.mle.audio.javasound.JavaSoundPlayer
 import concurrent.duration._
-import com.mle.util.{Util, Scheduling}
+import com.mle.util.Scheduling
 
 /**
  *

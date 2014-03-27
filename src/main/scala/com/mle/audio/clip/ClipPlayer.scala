@@ -45,41 +45,31 @@ class ClipPlayer(media: URI)
   val gainControl = clip.getControl(FloatControl.Type.MASTER_GAIN)
     .asInstanceOf[FloatControl]
 
-  def play() {
-    clip.start()
-  }
+  def play(): Unit = clip.start()
 
   def duration = clip.getMicrosecondLength.microseconds
 
   def position = clip.getMicrosecondPosition.microseconds
 
-  def stop() {
-    clip.stop()
-  }
+  def stop(): Unit = clip.stop()
 
-  def seek(pos: Duration) {
-    clip.setMicrosecondPosition(pos.toNanos / 1000)
-  }
+  def seek(pos: Duration): Unit = clip.setMicrosecondPosition(pos.toNanos / 1000)
 
   def gain = gainValue(gainControl.getValue)
 
-  def gain(level: Float) {
-    gainControl setValue dbValue(level)
-  }
+  override def volume = (gain * 100).toInt
+
+  def gain(level: Float): Unit = gainControl setValue dbValue(level)
+
+  override def volume(level: Int): Unit = gain(1.0F * level / 100)
 
   def mute = muteControl.getValue
 
-  def mute(mute: Boolean) {
-    muteControl setValue mute
-  }
+  def mute(mute: Boolean): Unit = muteControl setValue mute
 
-  def toggleMute() {
-    mute(!muteControl.getValue)
-  }
+  def toggleMute(): Unit = mute(!muteControl.getValue)
 
   def state = playerState
 
-  def close() {
-    clip.close()
-  }
+  def close(): Unit = clip.close()
 }

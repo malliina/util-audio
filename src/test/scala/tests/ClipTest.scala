@@ -1,8 +1,7 @@
-package com.mle.audio.tests
+package tests
 
 import org.scalatest.FunSuite
 import com.mle.util.Log
-import javax.sound.sampled.FloatControl
 import com.mle.audio.clip.ClipPlayer
 
 /**
