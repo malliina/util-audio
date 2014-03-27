@@ -14,6 +14,13 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
   private val zeroGain = 0.4f
   private val maxGain = 1.0f
 
+  private var volumeCache: Option[Int] = None
+  private var muteCache: Option[Boolean] = None
+
+  def cachedVolume = volumeCache
+
+  def cachedMute = muteCache
+
   /**
    * Bug: DataLine.getMicrosecondPosition returns milliseconds on Oracle's ARM JVM.
    *
@@ -48,17 +55,13 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
 
   def canAdjustVolume = hasVolumeControl || hasGainControl
 
-  def volume =
-    if (hasVolumeControl) {
-      log.info(s"Returning volume of $volumeControlValue, from volume control with value: ${volumeControl.map(_.getValue).getOrElse(-1)}")
-      volumeControlValue
-    } else if (hasGainControl) {
-      val ret =  (gainControlValue * 100).toInt
-      log.info(s"Returning volume of $ret, from gain control with value: ${gainControl.map(_.getValue).getOrElse(-1)}")
-      ret
-    } else {
-      log.info("Unable to find volume/gain control. Returning 0 as volume.")
-      0
+  def volume: Int =
+    if (hasVolumeControl) volumeControlValue
+    else if (hasGainControl) (gainControlValue * 100).toInt
+    else {
+      val cached = cachedVolume.getOrElse(0)
+      log.info(s"Unable to find volume/gain control. Returning volume $cached.")
+      cached
     }
 
   def volume_=(newVolume: Int): Unit = {
@@ -66,7 +69,9 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
     else if (hasGainControl) gainControlValue(1.0F * newVolume / 100)
     else {
       log.info("Cannot set volume, because no volume control was found.")
+      // should I throw an exception?
     }
+    volumeCache = Some(newVolume)
   }
 
   // implements trait
@@ -132,18 +137,28 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
 
   def muteControl = control[BooleanControl](BooleanControl.Type.MUTE)
 
-  def mute(shouldMute: Boolean): Unit =
+  def mute(shouldMute: Boolean): Unit = {
     muteControl.foreach(c => c.setValue(shouldMute))
+    muteCache = Some(shouldMute)
+  }
 
-  def mute =
-    muteControl.exists(_.getValue)
+  def mute = muteControl.exists(_.getValue)
 
   def toggleMute(): Unit = mute(!mute)
 
   private def hasControl(ctrl: Control.Type) =
     Option(audioLine).exists(_.isControlSupported(ctrl))
 
-  // ...
+  /**
+   * This throws an [[IllegalArgumentException]] after end of media. So I think that if the
+   * audioline is closed, getting a supported control may still throw [[IllegalArgumentException]].
+   *
+   * Thus this method is unsafe, wrap in Try() or whathaveyou.
+   *
+   * @param controlType type of control: volume, mute, ...
+   * @tparam T actual type of control
+   * @return the control
+   */
   private def control[T](controlType: Control.Type): Option[T] = Option(audioLine)
     .filter(_.isControlSupported(controlType))
     .map(_.getControl(controlType).asInstanceOf[T])
