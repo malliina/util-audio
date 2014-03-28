@@ -106,7 +106,7 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
   private def startPlayback() {
     active = true
     audioLine.start()
-    log.info(s"Starting playback of ${media.uri}")
+//    log.info(s"Starting playback of ${media.uri}")
     playThread = Some(Future(startPlayThread()).recover({
       // javazoom lib may throw at arbitrary playback moments
       case e: ArrayIndexOutOfBoundsException =>
