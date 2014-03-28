@@ -41,8 +41,10 @@ class LineData(inStream: AudioInputStream, onLineEvent: LineEvent => Unit = _ =>
   }
 
   def close() {
-    audioLine.drain()
+    // drain may block and I believe it has caused some issues; it is even necessary to call it here?
+    //    audioLine.drain()
     audioLine.stop()
+    audioLine.flush()
     audioLine.close()
     decodedIn.close()
     Try(inStream.close())
