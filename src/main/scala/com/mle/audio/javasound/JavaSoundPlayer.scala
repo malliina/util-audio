@@ -119,10 +119,15 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
   private def startPlayThread(): Unit = {
     val data = new Array[Byte](16384)
     var bytesRead = 0
+    var hasRead = false
     while (bytesRead != -1 && active) {
       // this is blocking, i guess
       bytesRead = lineData.decodedIn.read(data)
       if (bytesRead != -1) {
+        if (!hasRead) {
+          log.info(s"Now playing ${media.uri}")
+        }
+        hasRead = true
         audioLine.write(data, 0, bytesRead)
       } else {
         // cleanup
