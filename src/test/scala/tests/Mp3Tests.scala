@@ -12,7 +12,7 @@ import java.io.IOException
  */
 class Mp3Tests extends FunSuite with Log {
   test("mp3 playback") {
-    val musicFolder = Paths.get("")
+    val musicFolder = Paths.get("F:\\musik\\")
     val files = FileUtilities.listPaths(musicFolder)
     val mp3files = for (file <- files
                         if Files.isRegularFile(file)

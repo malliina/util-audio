@@ -15,7 +15,7 @@ object BuildBuild extends Build {
   ) ++ sbtPlugins
 
   def sbtPlugins = Seq(
-    "com.eed3si9n" % "sbt-assembly" % "0.11.2"
+    "com.github.malliina" % "sbt-utils" % "0.0.2"
   ) map addSbtPlugin
 
   override lazy val projects = Seq(root)

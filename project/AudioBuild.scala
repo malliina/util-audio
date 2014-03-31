@@ -1,21 +1,27 @@
+import com.mle.sbtutils.SbtUtils
 import sbt._
 import sbt.Keys._
-import sbtassembly.Plugin.AssemblyKeys._
 
 object AudioBuild extends Build {
   lazy val utilAudio = Project("util-audio", file(".")).settings(commonSettings: _*)
 
-  lazy val commonSettings = sbtassembly.Plugin.assemblySettings ++ Seq(
-    test in assembly := {},
-    organization := "com.github.malliina",
-    version := "1.1.1",
-    scalaVersion := "2.10.3",
+  val mleGroup = "com.github.malliina"
+  val soundGroup = "com.googlecode.soundlibs"
+
+  lazy val commonSettings = SbtUtils.publishSettings ++ Seq(
+    SbtUtils.gitUserName := "malliina",
+    SbtUtils.developerName := "Michael Skogberg",
+    version := "1.2.1",
+    scalaVersion := "2.10.4",
     retrieveManaged := false,
     sbt.Keys.fork in Test := true,
     libraryDependencies ++= Seq(
-      "com.github.malliina" %% "util" % "1.2.3",
+      mleGroup %% "util" % "1.3.0",
       "org.scalatest" %% "scalatest" % "2.0" % "test",
-      "org" % "jaudiotagger" % "2.0.3"),
+      "org" % "jaudiotagger" % "2.0.3",
+      soundGroup % "tritonus-share" % "0.3.7-2",
+      soundGroup % "jlayer" % "1.0.1-1",
+      soundGroup % "mp3spi" % "1.9.5-1"),
     exportJars := true,
     resolvers ++= Seq(
       "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
