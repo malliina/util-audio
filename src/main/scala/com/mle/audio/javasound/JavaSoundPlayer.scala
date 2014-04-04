@@ -53,8 +53,8 @@ class JavaSoundPlayer(val media: StreamInfo)(implicit val ec: ExecutionContext =
         log info "Start playback issued but playback already started: doing nothing"
       case PlayerStates.Closed =>
         log info "Starting playback of closed track"
-        resetLine(newLine(stream))
-        startPlayback()
+          resetLine(newLine(stream))
+          startPlayback()
       case anythingElse =>
         startPlayback()
     }
@@ -68,7 +68,7 @@ class JavaSoundPlayer(val media: StreamInfo)(implicit val ec: ExecutionContext =
 
   def close(): Unit = {
     closeLine()
-    stream.close()
+//    stream.close()
   }
 
   def onPlaybackException() = onEndOfMedia()

@@ -49,6 +49,18 @@ class PlaybackTests extends TestBase {
     val player = new JavaSoundPlayer(StreamInfo(stream, dur, size))
     player.play()
     sleep(4 seconds)
+    player.stop()
+    player.close()
+  }
+  test("initialize player with closed stream throws IOException") {
+    val file = ensureTestMp3Exists()
+    val stream = new BufferedInputStream(new FileInputStream(file.toFile))
+    val dur = 1.minute
+    val size = 10.megs
+    stream.close()
+    intercept[IOException]{
+      new JavaSoundPlayer(StreamInfo(stream, dur, size))
+    }
   }
   //  test("can open empty InputStream - no, this will block"){
   //    val dur = 1.minute
