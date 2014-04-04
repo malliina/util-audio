@@ -33,19 +33,22 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
    *
    * @return microseconds since the line was opened
    */
-  private def microsSinceLineOpened4 = {
-    val microsOrMillis = audioLine.getMicrosecondPosition
-    val multiplier = if (microsOrMillis > 1000 && microsOrMillis < 1000000) 1000L else 1L
-    multiplier * microsOrMillis
-  }
+//  private def microsSinceLineOpened4 = {
+//    val microsOrMillis = audioLine.getMicrosecondPosition
+//    val multiplier = if (microsOrMillis > 1000 && microsOrMillis < 1000000) 1000L else 1L
+//    multiplier * microsOrMillis
+//  }
 
+  // Method getLongFramePosition exists since 1.5.
+  // So is the tritonus-share library compiled against something earlier than 1.4 or why
+  // does IntelliJ complain here?
   private def microsSinceLineOpened = framesToMicroseconds(audioLine.getLongFramePosition)
 
-  private def microsSinceLineOpened2 = {
-    val frameSizeBytes = audioLine.getFormat.getFrameSize
-    val positionInBytes = audioLine.getLongFramePosition * frameSizeBytes
-    (1.0 * positionInBytes / media.size.toBytes) * media.duration.toMicros
-  }
+//  private def microsSinceLineOpened2 = {
+//    val frameSizeBytes = audioLine.getFormat.getFrameSize
+//    val positionInBytes = audioLine.getLongFramePosition * frameSizeBytes
+//    (1.0 * positionInBytes / media.size.toBytes) * media.duration.toMicros
+//  }
 
   // http://stackoverflow.com/questions/9470148/how-do-you-play-a-long-audioclip see if this formula works better
   private def framesToMicroseconds(frames: Long): Long =

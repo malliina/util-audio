@@ -16,13 +16,10 @@ trait IPlayer extends AutoCloseable {
    */
   def stop()
 
-  //  def duration: Time
-  //
-  //  def position: Time
-
   /**
-   * Skips to the given position, TODO type of parameter
-   * @param pos
+   * Seeks to `pos`.
+   *
+   * @param pos position to seek to
    */
   def seek(pos: Duration)
 
@@ -41,8 +38,6 @@ trait IPlayer extends AutoCloseable {
   def mute(mute: Boolean)
 
   def toggleMute()
-
-  //  def state: PlayerStates.PlayerState
 
   /**
    * Releases any player resources (input streams, ...). Playback is stopped.

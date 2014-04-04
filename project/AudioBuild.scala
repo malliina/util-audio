@@ -11,7 +11,7 @@ object AudioBuild extends Build {
   lazy val commonSettings = SbtUtils.publishSettings ++ Seq(
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
-    version := "1.2.1",
+    version := "1.2.3",
     scalaVersion := "2.10.4",
     retrieveManaged := false,
     sbt.Keys.fork in Test := true,
@@ -21,7 +21,8 @@ object AudioBuild extends Build {
       "org" % "jaudiotagger" % "2.0.3",
       soundGroup % "tritonus-share" % "0.3.7-2",
       soundGroup % "jlayer" % "1.0.1-1",
-      soundGroup % "mp3spi" % "1.9.5-1"),
+      soundGroup % "mp3spi" % "1.9.5-1",
+      "com.netflix.rxjava" % "rxjava-scala" % "0.17.2"),
     exportJars := true,
     resolvers ++= Seq(
       "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",

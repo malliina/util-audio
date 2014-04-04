@@ -2,7 +2,7 @@ package com.mle.audio.javasound
 
 import com.mle.util.Log
 import scala.concurrent.duration._
-import com.mle.audio.meta.MediaInfo
+import com.mle.audio.meta.SourceInfo
 
 /**
  * @author Michael
@@ -12,7 +12,7 @@ trait Seekable extends Log {
   // which is not equivalent to the track position if the user has seeked.
   var startedFromMicros = 0L
 
-  def media: MediaInfo
+  def media: SourceInfo
 
   def duration = media.duration
 

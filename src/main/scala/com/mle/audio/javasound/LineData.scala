@@ -1,23 +1,37 @@
 package com.mle.audio.javasound
 
-import java.net.URL
 import com.mle.util.Log
 import javax.sound.sampled.{AudioInputStream, LineEvent, AudioSystem}
 import com.mle.audio.PlayerStates
-import java.io.ByteArrayInputStream
-import scala.util.Try
+import java.io.InputStream
+
+object LineData {
+  /**
+   * This factory method blocks as long as `stream` is empty, i.e. until an appropriate amount
+   * of audio bytes has been made available to it.
+   *
+   * Therefore you must not, in the same thread, call this before bytes are made available to
+   * the stream.
+   *
+   * @param stream
+   * @return
+   */
+  def fromStream(stream: InputStream) = new LineData(AudioSystem.getAudioInputStream(stream))
+}
 
 class LineData(inStream: AudioInputStream, onLineEvent: LineEvent => Unit = _ => ())
   extends JavaSoundBase
   with Log {
-  def this(url: URL) = this(AudioSystem.getAudioInputStream(url))
-
-  def this(bytes: Array[Byte]) = this(AudioSystem.getAudioInputStream(new ByteArrayInputStream(bytes)))
 
   private val baseFormat = inStream.getFormat
   val decodedFormat = toDecodedFormat(baseFormat)
   // this is read
   val decodedIn = AudioSystem.getAudioInputStream(decodedFormat, inStream)
+  private val line = buildLine(decodedFormat, onLineEvent)
+  //  private val subject = Subject[LineEvent.Type]()
+  //  audioLine.addLineListener((e: LineEvent) => subject.onNext(e.getType))
+  //  val events: Observable[LineEvent.Type] = subject
+  line open decodedFormat
   // this is written to during playback
   val audioLine = openLine(decodedFormat, onLineEvent)
 
@@ -46,7 +60,8 @@ class LineData(inStream: AudioInputStream, onLineEvent: LineEvent => Unit = _ =>
     audioLine.stop()
     audioLine.flush()
     audioLine.close()
-    decodedIn.close()
-    Try(inStream.close())
+    //    decodedIn.close()
+    //    Try(inStream.close())
+    //    subject.onCompleted()
   }
 }

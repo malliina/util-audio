@@ -3,35 +3,35 @@ package com.mle.audio.javasound
 import com.mle.util.Log
 import scala.concurrent.{ExecutionContext, Future}
 import java.nio.file.Path
-import java.net.{URI, URL}
+import java.net.URI
 import scala.concurrent.duration.Duration
 import com.mle.audio._
 import scala.Some
-import com.mle.audio.meta.MediaInfo
+import com.mle.audio.meta.StreamInfo
 import com.mle.storage.StorageSize
+import java.io.InputStream
 
 /**
  * The user needs to provide the media length and size to enable seek functionality.
  *
- * TODO this needs work when it comes to concurrent operations
- *
- * @param media
+ * @param media media info to play
  */
-class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = ExecutionContexts.defaultPlaybackContext)
-  extends JavaSoundBase
-  with IPlayer
+class JavaSoundPlayer(val media: StreamInfo)(implicit val ec: ExecutionContext = ExecutionContexts.defaultPlaybackContext)
+//  extends JavaSoundBase
+  extends IPlayer
   with JavaSoundPlayerBase
   with Seekable
   with StateAwarePlayer
   with AutoCloseable
   with Log {
 
-  def this(media: Path) = this(MediaInfo fromPath media)
+  def this(media: Path) = this(StreamInfo fromFile media)
 
-  def this(uri: URI, duration: Duration, size: StorageSize) = this(MediaInfo(uri, duration, size))
+  def this(uri: URI, duration: Duration, size: StorageSize) = this(StreamInfo(uri.toURL.openStream(), duration, size))
 
-  private val url = media.uri.toURL
-  var lineData = newLine(url)
+  //  private val url = media.uri.toURL
+  private val stream = media.stream
+  protected var lineData: LineData = newLine(stream)
   private var active = true
   private var playThread: Option[Future[Unit]] = None
 
@@ -39,7 +39,7 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
 
   def controlDescriptions = audioLine.getControls.map(_.toString)
 
-  def newLine(source: URL): LineData = new LineData(source)
+  def newLine(source: InputStream): LineData = LineData fromStream source
 
   def stop() {
     active = false
@@ -53,7 +53,7 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
         log info "Start playback issued but playback already started: doing nothing"
       case PlayerStates.Closed =>
         log info "Starting playback of closed track"
-        resetLine(newLine(url))
+        resetLine(newLine(stream))
         startPlayback()
       case anythingElse =>
         startPlayback()
@@ -66,7 +66,10 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
     startedFromMicros = bytesToTime(skippedBytes).toMicros
   }
 
-  def close(): Unit = closeLine()
+  def close(): Unit = {
+    closeLine()
+    stream.close()
+  }
 
   def onPlaybackException() = onEndOfMedia()
 
@@ -87,7 +90,7 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
     val wasPlaying = lineData.state == PlayerStates.Started
     val wasMute = mute
     //    val previousGain = gain
-    val seekedLine = newLine(url)
+    val seekedLine = newLine(stream)
     val bytesSkipped = seekedLine skip byteCount
     resetLine(seekedLine)
     if (wasPlaying) {
@@ -106,11 +109,11 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
   private def startPlayback() {
     active = true
     audioLine.start()
-//    log.info(s"Starting playback of ${media.uri}")
+    //    log.info(s"Starting playback of ${media.uri}")
     playThread = Some(Future(startPlayThread()).recover({
       // javazoom lib may throw at arbitrary playback moments
       case e: ArrayIndexOutOfBoundsException =>
-        log warn("Boom!", e)
+        log warn(e.getClass.getName, e)
         closeLine()
         onPlaybackException()
     }))
@@ -125,7 +128,7 @@ class JavaSoundPlayer(val media: MediaInfo)(implicit val ec: ExecutionContext = 
       bytesRead = lineData.decodedIn.read(data)
       if (bytesRead != -1) {
         if (!hasRead) {
-          log.info(s"Now playing ${media.uri}")
+          log.info(s"Now playing")
         }
         hasRead = true
         audioLine.write(data, 0, bytesRead)
