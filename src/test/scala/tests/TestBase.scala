@@ -4,7 +4,7 @@ import org.scalatest.FunSuite
 import com.mle.util.{Util, FileUtilities}
 import java.nio.file.{Files, Path}
 import org.apache.commons.io.FileUtils
-import com.mle.audio.javasound.JavaSoundPlayer
+import com.mle.audio.javasound.{FileJavaSoundPlayer, JavaSoundPlayer}
 import scala.concurrent.duration.Duration
 
 /**
@@ -29,7 +29,7 @@ class TestBase extends FunSuite {
 
   def withTestTrack[T](f: JavaSoundPlayer => T): T = {
     val file = ensureTestMp3Exists()
-    val player = new JavaSoundPlayer(file)
+    val player = new FileJavaSoundPlayer(file)
     Util.using(player)(f)
   }
 

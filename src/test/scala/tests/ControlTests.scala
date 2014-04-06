@@ -1,6 +1,6 @@
 package tests
 
-import com.mle.audio.javasound.JavaSoundPlayer
+import com.mle.audio.javasound.{FileJavaSoundPlayer, JavaSoundPlayer}
 
 /**
  *
@@ -9,12 +9,12 @@ import com.mle.audio.javasound.JavaSoundPlayer
 class ControlTests extends TestBase {
   test("supported controls") {
     val file = ensureTestMp3Exists()
-    val player = new JavaSoundPlayer(file)
+    val player = new FileJavaSoundPlayer(file)
     assert(player.canAdjustVolume)
   }
   test("volume conversions") {
     val file = ensureTestMp3Exists()
-    val player = new JavaSoundPlayer(file)
+    val player = new FileJavaSoundPlayer(file)
     val e1 = player.externalVolumeValue(25000, 0, 65663)
     assert(e1 === (25000f / 65663f * 100f).toInt)
     val e2 = player.externalVolumeValue(54000, 0, 54000)
