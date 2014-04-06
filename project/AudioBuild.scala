@@ -11,7 +11,7 @@ object AudioBuild extends Build {
   lazy val commonSettings = SbtUtils.publishSettings ++ Seq(
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
-    version := "1.2.4",
+    version := "1.2.5",
     scalaVersion := "2.10.4",
     retrieveManaged := false,
     sbt.Keys.fork in Test := true,
