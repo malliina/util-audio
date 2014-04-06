@@ -28,9 +28,6 @@ class LineData(inStream: AudioInputStream, onLineEvent: LineEvent => Unit = _ =>
   // this is read
   val decodedIn = AudioSystem.getAudioInputStream(decodedFormat, inStream)
   private val line = buildLine(decodedFormat, onLineEvent)
-  //  private val subject = Subject[LineEvent.Type]()
-  //  audioLine.addLineListener((e: LineEvent) => subject.onNext(e.getType))
-  //  val events: Observable[LineEvent.Type] = subject
   line open decodedFormat
   // this is written to during playback
   val audioLine = openLine(decodedFormat, onLineEvent)

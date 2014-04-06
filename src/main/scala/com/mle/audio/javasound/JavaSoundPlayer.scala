@@ -52,9 +52,10 @@ class JavaSoundPlayer(val media: StreamInfo)(implicit val ec: ExecutionContext =
       case PlayerStates.Started =>
         log info "Start playback issued but playback already started: doing nothing"
       case PlayerStates.Closed =>
-        log info "Starting playback of closed track"
-          resetLine(newLine(stream))
-          startPlayback()
+        log warn "Attempting to start playback of a closed player. This is incorrect."
+        // After end of media, the InputStream is closed and cannot be reused. Therefore this player cannot be used.
+        // It's incorrect to call methods on a closed player. In principle we should throw an exception here, but I try
+        // to resist the path of the IllegalStateException.
       case anythingElse =>
         startPlayback()
     }
@@ -68,7 +69,7 @@ class JavaSoundPlayer(val media: StreamInfo)(implicit val ec: ExecutionContext =
 
   def close(): Unit = {
     closeLine()
-//    stream.close()
+    //    stream.close()
   }
 
   def onPlaybackException() = onEndOfMedia()

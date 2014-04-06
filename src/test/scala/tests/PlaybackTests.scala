@@ -5,6 +5,7 @@ import java.io._
 import com.mle.audio.javasound.JavaSoundPlayer
 import com.mle.audio.meta.StreamInfo
 import com.mle.storage.StorageInt
+import scala.concurrent.{Await, Future}
 
 /**
  *
@@ -58,15 +59,29 @@ class PlaybackTests extends TestBase {
     val dur = 1.minute
     val size = 10.megs
     stream.close()
-    intercept[IOException]{
+    intercept[IOException] {
       new JavaSoundPlayer(StreamInfo(stream, dur, size))
     }
   }
-  //  test("can open empty InputStream - no, this will block"){
-  //    val dur = 1.minute
-  //    val size = 100.megs
-  //    val out = new PipedOutputStream()
-  //    val in = new PipedInputStream(out)
-  //    val player = new JavaSoundPlayer(StreamInfo(in, dur, size))
-  //  }
+  test("playing an empty InputStream blocks, and throws 'IOException: mark/reset not supported' when its PipedOutputStream is closed") {
+    import com.mle.audio.ExecutionContexts.defaultPlaybackContext
+    val dur = 1.minute
+    val size = 100.megs
+    val out = new PipedOutputStream()
+    val in = new PipedInputStream(out)
+    val fut = Future {
+      new JavaSoundPlayer(StreamInfo(in, dur, size))
+    }
+    Thread.sleep(1000)
+    out.close()
+    Thread.sleep(500)
+    assert(fut.isCompleted)
+    val booleanFuture = fut.map(_ => false).recover {
+      case t: IOException if t.getMessage == "mark/reset not supported" => true
+      case t: Throwable => false
+    }
+    val futureCompletesAsExpected = Await.result(booleanFuture, 1.second)
+    assert(futureCompletesAsExpected)
+    in.close()
+  }
 }
