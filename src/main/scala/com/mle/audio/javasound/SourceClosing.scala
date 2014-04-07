@@ -10,6 +10,6 @@ package com.mle.audio.javasound
 trait SourceClosing extends JavaSoundPlayer {
   abstract override def close() {
     super.close()
-    media.stream.close()
+    stream.close()
   }
 }

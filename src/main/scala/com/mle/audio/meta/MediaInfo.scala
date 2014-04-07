@@ -10,32 +10,37 @@ import java.io.{BufferedInputStream, FileInputStream, InputStream}
  * @author Michael
  */
 
-trait SourceInfo {
+trait MediaMeta {
   def duration: Duration
 
   def size: StorageSize
 }
 
-case class MediaInfo(uri: URI, duration: Duration, size: StorageSize) extends SourceInfo
+trait StreamSource extends MediaMeta {
+  def openStream: InputStream
 
-object MediaInfo {
-  def fromPath(path: Path) = MediaInfo(
-    path.toUri,
-    MediaTags.audioDuration(path),
-    (Files size path).bytes
-  )
+  def toOneShot = OneShotStream(openStream, duration, size)
 }
 
-case class StreamInfo(stream: InputStream, duration: Duration, size: StorageSize) extends SourceInfo
-
-object StreamInfo {
-  def fromFile(path: Path) = {
-    val stream = new BufferedInputStream(new FileInputStream(path.toFile))
-    StreamInfo(stream, MediaTags.audioDuration(path), (Files size path).bytes)
-  }
+object StreamSource {
+  def fromFile(file: Path) =
+    FileSource(file, MediaTags.audioDuration(file))
 
   def fromURI(uri: URI, duration: Duration, size: StorageSize) =
-    StreamInfo(uri.toURL.openStream(), duration, size)
+    UriSource(uri, duration, size)
 }
+
+case class OneShotStream(stream: InputStream, duration: Duration, size: StorageSize) extends MediaMeta
+
+case class UriSource(uri: URI, duration: Duration, size: StorageSize) extends StreamSource {
+  override def openStream: InputStream = uri.toURL.openStream()
+}
+
+case class FileSource(file: Path, duration: Duration) extends StreamSource {
+  override val size: StorageSize = (Files size file).bytes
+
+  def openStream: InputStream = new BufferedInputStream(new FileInputStream(file.toFile))
+}
+
 
 

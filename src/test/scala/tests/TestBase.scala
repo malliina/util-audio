@@ -33,5 +33,10 @@ class TestBase extends FunSuite {
     Util.using(player)(f)
   }
 
+  def assertPosition(pos: Duration, min: Long, max: Long) = {
+    val seconds = pos.toSeconds
+    assert(seconds >= min && seconds <= max, s"$seconds must be within [$min, $max]")
+  }
+
   def sleep(duration: Duration) = Thread.sleep(duration.toMillis)
 }

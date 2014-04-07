@@ -3,7 +3,7 @@ package tests
 import scala.concurrent.duration.DurationInt
 import java.io._
 import com.mle.audio.javasound.JavaSoundPlayer
-import com.mle.audio.meta.StreamInfo
+import com.mle.audio.meta.{OneShotStream, StreamSource}
 import com.mle.storage.StorageInt
 import scala.concurrent.{Await, Future}
 
@@ -20,7 +20,7 @@ class PlaybackTests extends TestBase {
       assert(player.position.toSeconds > 2)
     })
   }
-  test("can seek and get position duration afterwards") {
+  test("can seek and get position afterwards") {
     withTestTrack(player => {
       player.play()
       sleep(100 millis)
@@ -44,33 +44,30 @@ class PlaybackTests extends TestBase {
   }
   test("can stream") {
     val file = ensureTestMp3Exists()
-    val stream = new BufferedInputStream(new FileInputStream(file.toFile))
-    val dur = 1.minute
-    val size = 10.megs
-    val player = new JavaSoundPlayer(StreamInfo(stream, dur, size))
+    val stream = StreamSource.fromFile(file).toOneShot
+    val player = new JavaSoundPlayer(stream)
     player.play()
     sleep(4 seconds)
     player.stop()
     player.close()
+    stream.stream.close()
   }
   test("initialize player with closed stream throws IOException") {
     val file = ensureTestMp3Exists()
-    val stream = new BufferedInputStream(new FileInputStream(file.toFile))
-    val dur = 1.minute
-    val size = 10.megs
-    stream.close()
+    val stream = StreamSource.fromFile(file).toOneShot
+    stream.stream.close()
     intercept[IOException] {
-      new JavaSoundPlayer(StreamInfo(stream, dur, size))
+      new JavaSoundPlayer(stream)
     }
   }
-  test("playing an empty InputStream blocks, and throws 'IOException: mark/reset not supported' when its PipedOutputStream is closed") {
+  test("playing an empty PipedInputStream blocks, and throws 'IOException: mark/reset not supported' when its PipedOutputStream is closed") {
     import com.mle.audio.ExecutionContexts.defaultPlaybackContext
     val dur = 1.minute
     val size = 100.megs
     val out = new PipedOutputStream()
     val in = new PipedInputStream(out)
     val fut = Future {
-      new JavaSoundPlayer(StreamInfo(in, dur, size))
+      new JavaSoundPlayer(OneShotStream(in, dur, size))
     }
     Thread.sleep(1000)
     out.close()

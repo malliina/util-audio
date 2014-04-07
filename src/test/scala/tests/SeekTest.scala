@@ -2,28 +2,27 @@ package tests
 
 import java.nio.file.Paths
 import com.mle.audio.javasound.FileJavaSoundPlayer
-import scala.concurrent.duration.{Duration, DurationInt}
+import scala.concurrent.duration.DurationInt
 
 /**
  *
  * @author mle
  */
 class SeekTest extends TestBase {
-  val file = Paths get "F:\\musik\\NHL08 Soundtrack\\Paramore - Misery Business.mp3"
+  val file = None // Paths get ""
   test("seeking a file is accurate") {
-    val player = new FileJavaSoundPlayer(file)
-    player.play()
-    sleep(100 millis)
-    player seek 100.seconds
-    sleep(3000 millis)
-    assertPosition(player.position, 101, 105)
-    player seek 1.seconds
-    sleep(5000 millis)
-    assertPosition(player.position, 2, 16)
-  }
-
-  def assertPosition(pos: Duration, min: Long, max: Long) = {
-    val seconds = pos.toSeconds
-    assert(seconds >= min && seconds <= max,s"$seconds must be within [$min, $max]")
+    file.foreach(f => {
+      val player = new FileJavaSoundPlayer(f)
+      player.play()
+      sleep(100 millis)
+      val first = 200
+      player seek first.seconds
+      sleep(3000 millis)
+      assertPosition(player.position, first, first + 6)
+      val second = 1
+      player seek second.seconds
+      sleep(3000 millis)
+      assertPosition(player.position, second + 1, second + 5)
+    })
   }
 }

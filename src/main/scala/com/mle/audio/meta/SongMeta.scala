@@ -9,7 +9,7 @@ import com.mle.storage.StorageLong
 /**
  * @author Michael
  */
-case class SongMeta(media: MediaInfo, tags: SongTags)
+case class SongMeta(media: StreamSource, tags: SongTags)
 
 object SongMeta extends Log {
   def fromPath(path: Path): SongMeta = fromPath(path, Option(path.getRoot).getOrElse(path))
@@ -18,7 +18,7 @@ object SongMeta extends Log {
     val audioFile = AudioFileIO read absolutePath.toFile
     val duration = audioFile.getAudioHeader.getTrackLength.toDouble.seconds
     val tags = SongTags.fromAudioFile(audioFile).getOrElse(SongTags.fromFilePath(absolutePath, root))
-    SongMeta(MediaInfo(absolutePath.toUri, duration, (Files size absolutePath).bytes), tags)
+    SongMeta(FileSource(absolutePath, duration), tags)
   }
 
   def fromFilePath(path: Path, root: Path) = {
@@ -32,7 +32,7 @@ object SongMeta extends Log {
         Option(pp.getFileName).map(_.toString).getOrElse(album)
       }).getOrElse(album)
     }).getOrElse(album)
-    SongMeta(MediaInfo.fromPath(path), SongTags(title, album, artist))
+    SongMeta(StreamSource.fromFile(path), SongTags(title, album, artist))
   }
 
   def titleFromFileName(path: Path) = {
