@@ -8,6 +8,10 @@ import com.mle.audio.meta.OneShotStream
 import java.io.InputStream
 import com.mle.storage.StorageSize
 import com.mle.storage.StorageLong
+import rx.lang.scala.subjects.BehaviorSubject
+import rx.lang.scala.{Subscription, Subject, Observable}
+import concurrent.duration.DurationInt
+import com.mle.audio.PlaybackEvents.TimeUpdated
 
 /**
  * A music player. Plays one media source. To change source, for example to change track, create a new player.
@@ -34,15 +38,58 @@ class JavaSoundPlayer(val media: OneShotStream)(implicit val ec: ExecutionContex
 
   protected var stream = media.stream
   tryMarkStream()
-  protected var lineData: LineData = newLine(stream)
+  private val subject = BehaviorSubject[PlayerStates.PlayerState](PlayerStates.Closed)
+  /**
+   * I use a Subject because the audio line might change and it seems easier then to keep one subject
+   * instead of reacting to each audio line change in each observable (in addition to its events).
+   */
+  private val playbackSubject = BehaviorSubject[PlaybackEvents.PlaybackEvent](PlaybackEvents.Closed)
+  private val pollingObservable = Observable.interval(500.millis)
+  protected var lineData: LineData = newLine(stream, subject)
   private var active = false
   private var playThread: Option[Future[Unit]] = None
 
-  def audioLine = lineData.audioLine
+  /**
+   * @return the current player state and any future states
+   */
+  def events: Observable[PlayerStates.PlayerState] = subject
+
+  /**
+   * A stream of time update events. Emits the current playback position, then emits at least one event per second
+   * provided that the playback position changes. If there is no progress, for example if playback is stopped, no
+   * events are emitted.
+   *
+   * @return time update events
+   */
+  def timeUpdates: Observable[PlaybackEvents.TimeUpdated] = Observable(subscriber => {
+    var pollSubscription: Option[Subscription] = None
+    var latestPosition = position
+    subscriber onNext TimeUpdated(latestPosition)
+    val timeSubscription = events.subscribe(state => {
+      if (state == PlayerStates.Started && pollSubscription.isEmpty) {
+        pollSubscription = Some(pollingObservable.subscribe(_ => {
+          if (latestPosition != position) {
+            latestPosition = position
+            subscriber onNext TimeUpdated(position)
+          }
+        }))
+      } else {
+        pollSubscription.foreach(_.unsubscribe())
+        pollSubscription = None
+      }
+    })
+    pollSubscription.foreach(subscriber.add)
+    subscriber add timeSubscription
+  })
+
+  def playbackEvents: Observable[PlaybackEvents.PlaybackEvent] = playbackSubject
+
+  def audioLine = lineData.line
 
   def controlDescriptions = audioLine.getControls.map(_.toString)
 
-  def newLine(source: InputStream): LineData = LineData fromStream source
+  def newLine(source: InputStream, subject: Subject[PlayerStates.PlayerState]): LineData =
+    LineData fromStream(source, subject)
 
   def supportsSeek = stream.markSupported()
 
@@ -92,14 +139,23 @@ class JavaSoundPlayer(val media: OneShotStream)(implicit val ec: ExecutionContex
     else if (!stream.markSupported()) Some("Cannot seek because the media stream does not support marking; see InputStream.markSupported() for more details")
     else None
 
-  def close(): Unit = closeLine()
 
-  def onPlaybackException() = onEndOfMedia()
+  override def onEndOfMedia(): Unit = {
+    super.onEndOfMedia()
+    subject onNext PlayerStates.EndOfMedia
+  }
+
+  def close(): Unit = {
+    closeLine()
+    subject.onCompleted()
+  }
+
+  def onPlaybackException(e: Exception) = onEndOfMedia()
 
   def reset() {
     closeLine()
     stream = resetStream(stream)
-    lineData = newLine(stream)
+    lineData = newLine(stream, subject)
   }
 
   /**
@@ -152,7 +208,7 @@ class JavaSoundPlayer(val media: OneShotStream)(implicit val ec: ExecutionContex
       case e: ArrayIndexOutOfBoundsException =>
         log warn(e.getClass.getName, e)
         closeLine()
-        onPlaybackException()
+        onPlaybackException(e)
     }))
   }
 
@@ -160,8 +216,8 @@ class JavaSoundPlayer(val media: OneShotStream)(implicit val ec: ExecutionContex
     val data = new Array[Byte](4096 * 4)
     var bytesRead = 0
     while (bytesRead != -1 && active) {
-      // this is blocking, i guess
-      bytesRead = lineData.decodedIn.read(data)
+      // blocks until audio data is available
+      bytesRead = lineData.read(data)
       if (bytesRead != -1) {
         audioLine.write(data, 0, bytesRead)
       } else {

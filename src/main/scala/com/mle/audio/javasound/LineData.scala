@@ -1,9 +1,12 @@
 package com.mle.audio.javasound
 
 import com.mle.util.Log
-import javax.sound.sampled.{AudioInputStream, LineEvent, AudioSystem}
+import javax.sound.sampled._
 import com.mle.audio.PlayerStates
 import java.io.InputStream
+import com.mle.audio.AudioImplicits._
+import rx.lang.scala.Subject
+import javax.sound.sampled.DataLine.Info
 
 object LineData {
   /**
@@ -16,21 +19,35 @@ object LineData {
    * @param stream
    * @return
    */
-  def fromStream(stream: InputStream) = new LineData(AudioSystem.getAudioInputStream(stream))
+  def fromStream(stream: InputStream, subject: Subject[PlayerStates.PlayerState]) =
+    new LineData(AudioSystem.getAudioInputStream(stream), subject)
 }
 
-class LineData(inStream: AudioInputStream, onLineEvent: LineEvent => Unit = _ => ())
+class LineData(inStream: AudioInputStream, subject: Subject[PlayerStates.PlayerState])
   extends JavaSoundBase
   with Log {
 
   private val baseFormat = inStream.getFormat
-  val decodedFormat = toDecodedFormat(baseFormat)
+  private val decodedFormat = toDecodedFormat(baseFormat)
   // this is read
-  val decodedIn = AudioSystem.getAudioInputStream(decodedFormat, inStream)
-  private val line = buildLine(decodedFormat, onLineEvent)
-  line open decodedFormat
+  private val decodedIn = AudioSystem.getAudioInputStream(decodedFormat, inStream)
   // this is written to during playback
-  val audioLine = openLine(decodedFormat, onLineEvent)
+  val line = buildLine(decodedFormat)
+  line.addLineListener((lineEvent: LineEvent) => subject.onNext(toPlayerEvent(lineEvent)))
+  line open decodedFormat
+
+  def toPlayerEvent(lineEvent: LineEvent): PlayerStates.PlayerState = {
+    import LineEvent.Type._
+    import PlayerStates._
+    val eventType = lineEvent.getType
+    if (eventType == OPEN) Open
+    else if (eventType == CLOSE) Closed
+    else if (eventType == START) Started
+    else if (eventType == STOP) Stopped
+    else Unknown
+  }
+
+  def read(buffer: Array[Byte]) = decodedIn.read(buffer)
 
   def skip(bytes: Long) = {
     val skipped = decodedIn skip bytes
@@ -40,8 +57,8 @@ class LineData(inStream: AudioInputStream, onLineEvent: LineEvent => Unit = _ =>
 
   def state = {
     import PlayerStates._
-    if (audioLine.isOpen) {
-      if (audioLine.isActive) {
+    if (line.isOpen) {
+      if (line.isActive) {
         Started
       } else {
         Stopped
@@ -52,13 +69,26 @@ class LineData(inStream: AudioInputStream, onLineEvent: LineEvent => Unit = _ =>
   }
 
   def close() {
-    // drain may block and I believe it has caused some issues; it is even necessary to call it here?
-    //    audioLine.drain()
-    audioLine.stop()
-    audioLine.flush()
-    audioLine.close()
-    //    decodedIn.close()
-    //    Try(inStream.close())
-    //    subject.onCompleted()
+    line.stop()
+    line.flush()
+    line.close()
   }
+
+  private def buildLine(format: AudioFormat): SourceDataLine = {
+    val info = new Info(classOf[SourceDataLine], format)
+    val line = AudioSystem.getLine(info).asInstanceOf[SourceDataLine]
+    // Add line listeners before opening the line.
+    line.addLineListener((e: LineEvent) => log debug s"Line event: $e")
+    line
+  }
+
+  protected def toDecodedFormat(audioFormat: AudioFormat) = new AudioFormat(
+    AudioFormat.Encoding.PCM_SIGNED,
+    audioFormat.getSampleRate,
+    16,
+    audioFormat.getChannels,
+    audioFormat.getChannels * 2,
+    audioFormat.getSampleRate,
+    false
+  )
 }

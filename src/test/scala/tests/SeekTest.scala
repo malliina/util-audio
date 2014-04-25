@@ -1,6 +1,5 @@
 package tests
 
-import java.nio.file.Paths
 import com.mle.audio.javasound.FileJavaSoundPlayer
 import scala.concurrent.duration.DurationInt
 

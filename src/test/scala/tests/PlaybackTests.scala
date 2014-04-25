@@ -5,13 +5,15 @@ import java.io._
 import com.mle.audio.javasound.JavaSoundPlayer
 import com.mle.audio.meta.{OneShotStream, StreamSource}
 import com.mle.storage.StorageInt
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Promise, Await, Future}
+import com.mle.audio.PlayerStates
+import com.mle.util.Log
 
 /**
  *
  * @author mle
  */
-class PlaybackTests extends TestBase {
+class PlaybackTests extends TestBase with Log {
   test("can play mp3 and can get duration, position") {
     withTestTrack(player => {
       assert(player.duration.toSeconds === 12)
@@ -29,7 +31,7 @@ class PlaybackTests extends TestBase {
       assert(player.position.toSeconds >= 2)
     })
   }
-  test("can seek backwards - not sure what's up, this only succeeds when run individually, are my tests not isolated?") {
+  test("can seek backwards") {
     withTestTrack(player => {
       player.play()
       sleep(10 millis)
@@ -80,5 +82,19 @@ class PlaybackTests extends TestBase {
     val futureCompletesAsExpected = Await.result(booleanFuture, 1.second)
     assert(futureCompletesAsExpected)
     in.close()
+  }
+  test("onEndOfMedia fires when a track finishes playback") {
+    withTestTrack(p => {
+      p.play()
+      sleep(100.millis)
+      p seek 9.seconds
+//      val s1 = p.events.subscribe(e => log.info(s"event: $e"))
+      val promise = Promise[PlayerStates.PlayerState]()
+      val s = p.events.filter(_ == PlayerStates.EndOfMedia).subscribe(o => promise.trySuccess(o))
+      val maybeEom = Await.result(promise.future, 20 seconds)
+      assert(maybeEom === PlayerStates.EndOfMedia)
+      s.unsubscribe()
+//      s1.unsubscribe()
+    })
   }
 }
