@@ -1,10 +1,13 @@
 package tests
 
-import org.scalatest.FunSuite
-import com.mle.util.{Util, FileUtilities}
 import java.nio.file.{Files, Path}
-import org.apache.commons.io.FileUtils
+
 import com.mle.audio.javasound.{FileJavaSoundPlayer, JavaSoundPlayer}
+import com.mle.file.FileUtilities
+import com.mle.util.Util
+import org.apache.commons.io.FileUtils
+import org.scalatest.FunSuite
+
 import scala.concurrent.duration.Duration
 
 /**

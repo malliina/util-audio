@@ -1,17 +1,18 @@
 package com.mle.audio.javasound
 
-import com.mle.util.Log
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration.Duration
-import com.mle.audio._
-import com.mle.audio.meta.OneShotStream
 import java.io.InputStream
-import com.mle.storage.StorageSize
-import com.mle.storage.StorageLong
-import rx.lang.scala.subjects.BehaviorSubject
-import rx.lang.scala.{Subscription, Subject, Observable}
-import concurrent.duration.DurationInt
+
 import com.mle.audio.PlaybackEvents.TimeUpdated
+import com.mle.audio._
+import com.mle.audio.javasound.JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE
+import com.mle.audio.meta.OneShotStream
+import com.mle.storage.{StorageLong, StorageSize}
+import com.mle.util.Log
+import rx.lang.scala.subjects.BehaviorSubject
+import rx.lang.scala.{Observable, Subject, Subscription}
+
+import scala.concurrent.duration.{Duration, DurationInt}
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * A music player. Plays one media source. To change source, for example to change track, create a new player.
@@ -27,15 +28,20 @@ import com.mle.audio.PlaybackEvents.TimeUpdated
  * @see [[UriJavaSoundPlayer]]
  * @param media media info to play
  */
-class JavaSoundPlayer(val media: OneShotStream)(implicit val ec: ExecutionContext = ExecutionContexts.defaultPlaybackContext)
+class JavaSoundPlayer(val media: OneShotStream, readWriteBufferSize: StorageSize = DEFAULT_RW_BUFFER_SIZE)(implicit val ec: ExecutionContext = ExecutionContexts.defaultPlaybackContext)
   extends IPlayer
   with JavaSoundPlayerBase
   with StateAwarePlayer
   with AutoCloseable
   with Log {
 
-  def this(stream: InputStream, duration: Duration, size: StorageSize) = this(OneShotStream(stream, duration, size))
+  def this(stream: InputStream,
+           duration: Duration,
+           size: StorageSize,
+           readWriteBufferSize: StorageSize) =
+    this(OneShotStream(stream, duration, size), readWriteBufferSize)
 
+  val bufferSize = readWriteBufferSize.toBytes.toInt
   protected var stream = media.stream
   tryMarkStream()
   private val subject = BehaviorSubject[PlayerStates.PlayerState](PlayerStates.Closed)
@@ -139,7 +145,6 @@ class JavaSoundPlayer(val media: OneShotStream)(implicit val ec: ExecutionContex
     else if (!stream.markSupported()) Some("Cannot seek because the media stream does not support marking; see InputStream.markSupported() for more details")
     else None
 
-
   override def onEndOfMedia(): Unit = {
     super.onEndOfMedia()
     subject onNext PlayerStates.EndOfMedia
@@ -213,7 +218,7 @@ class JavaSoundPlayer(val media: OneShotStream)(implicit val ec: ExecutionContex
   }
 
   private def startPlayThread(): Unit = {
-    val data = new Array[Byte](4096 * 4)
+    val data = new Array[Byte](bufferSize)
     var bytesRead = 0
     while (bytesRead != -1 && active) {
       // blocks until audio data is available
@@ -240,3 +245,6 @@ class JavaSoundPlayer(val media: OneShotStream)(implicit val ec: ExecutionContex
   }
 }
 
+object JavaSoundPlayer {
+  val DEFAULT_RW_BUFFER_SIZE = 4096.bytes
+}

@@ -31,6 +31,8 @@ trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
    *
    * Better implementations are welcome.
    *
+   * TODO if(sys.props("os.arch").contains("arm")) hack else donthack
+   *
    * @return microseconds since the line was opened
    */
 //  private def microsSinceLineOpened4 = {

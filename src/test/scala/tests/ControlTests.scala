@@ -1,6 +1,6 @@
 package tests
 
-import com.mle.audio.javasound.{FileJavaSoundPlayer, JavaSoundPlayer}
+import com.mle.audio.javasound.FileJavaSoundPlayer
 
 /**
  *

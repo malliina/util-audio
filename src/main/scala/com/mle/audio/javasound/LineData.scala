@@ -13,8 +13,7 @@ object LineData {
    * This factory method blocks as long as `stream` is empty, i.e. until an appropriate amount
    * of audio bytes has been made available to it.
    *
-   * Therefore you must not, in the same thread, call this before bytes are made available to
-   * the stream.
+   * Therefore you must not, in the same thread, call this before bytes are made available to the stream.
    *
    * @param stream
    * @return
@@ -23,10 +22,7 @@ object LineData {
     new LineData(AudioSystem.getAudioInputStream(stream), subject)
 }
 
-class LineData(inStream: AudioInputStream, subject: Subject[PlayerStates.PlayerState])
-  extends JavaSoundBase
-  with Log {
-
+class LineData(inStream: AudioInputStream, subject: Subject[PlayerStates.PlayerState]) extends Log {
   private val baseFormat = inStream.getFormat
   private val decodedFormat = toDecodedFormat(baseFormat)
   // this is read
