@@ -5,12 +5,12 @@ import sbtassembly.Plugin.AssemblyKeys._
 import sbtassembly.Plugin._
 
 object AudioBuild extends Build {
-  lazy val utilAudio = SbtProjects.testableProject("util-audio").settings(commonSettings: _*)
+  lazy val utilAudio = SbtProjects.mavenPublishProject("util-audio").settings(commonSettings: _*)
 
   val mleGroup = "com.github.malliina"
   val soundGroup = "com.googlecode.soundlibs"
 
-  lazy val commonSettings =assemblySettings ++ Seq(
+  lazy val commonSettings = assemblySettings ++ Seq(
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
     version := "1.4.4",
