@@ -219,11 +219,12 @@ class JavaSoundPlayer(val media: OneShotStream, readWriteBufferSize: StorageSize
 
   private def startPlayThread(): Unit = {
     val data = new Array[Byte](bufferSize)
+    val END_OF_STREAM = -1
     var bytesRead = 0
-    while (bytesRead != -1 && active) {
+    while (bytesRead != END_OF_STREAM && active) {
       // blocks until audio data is available
       bytesRead = lineData.read(data)
-      if (bytesRead != -1) {
+      if (bytesRead != END_OF_STREAM) {
         audioLine.write(data, 0, bytesRead)
       } else {
         // cleanup
