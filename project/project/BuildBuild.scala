@@ -9,14 +9,16 @@ object BuildBuild extends Build {
   // "build.sbt" goes here
   override lazy val settings = super.settings ++ Seq(
     scalaVersion := "2.10.4",
-    resolvers ++= Seq("Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"),
+    resolvers ++= Seq(
+      "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+      "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"),
     scalacOptions ++= Seq("-unchecked", "-deprecation")
   ) ++ sbtPlugins
 
   val mleGroup = "com.github.malliina"
 
   def sbtPlugins = Seq(
-    mleGroup % "sbt-utils" % "0.0.5",
+    mleGroup % "sbt-utils" % "0.1.0",
     mleGroup %% "ssh-client" % "0.0.4",
     "com.eed3si9n" % "sbt-assembly" % "0.11.2"
   ) map addSbtPlugin

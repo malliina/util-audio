@@ -13,26 +13,18 @@ object AudioBuild extends Build {
   lazy val commonSettings = assemblySettings ++ Seq(
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
-    version := "1.5.0",
+    version := "1.6.0",
     scalaVersion := "2.11.6",
     crossScalaVersions := Seq(scalaVersion.value, "2.10.4"),
     retrieveManaged := false,
     sbt.Keys.fork in Test := true,
     libraryDependencies ++= Seq(
-      mleGroup %% "util" % "1.6.1",
+      mleGroup %% "util" % "1.8.0",
       "org" % "jaudiotagger" % "2.0.3",
       soundGroup % "tritonus-share" % "0.3.7-2",
       soundGroup % "jlayer" % "1.0.1-1",
-      soundGroup % "mp3spi" % "1.9.5-1",
-      "io.reactivex" %% "rxscala" % "0.24.1"),
-    libraryDependencies := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, scalaMajor)) if scalaMajor >= 11 =>
-          libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.2"
-        case _ =>
-          libraryDependencies.value
-      }
-    },
+      soundGroup % "mp3spi" % "1.9.5-1"),
+    updateOptions := updateOptions.value.withCachedResolution(true),
     exportJars := true,
     resolvers ++= Seq(
       "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/",

@@ -25,21 +25,21 @@ class PlaybackTests extends TestBase with Log {
   test("can seek and get position afterwards") {
     withTestTrack(player => {
       player.play()
-      sleep(100 millis)
+      sleep(100.millis)
       player seek 3.seconds
-      sleep(500 millis)
+      sleep(500.millis)
       assert(player.position.toSeconds >= 2)
     })
   }
   test("can seek backwards") {
     withTestTrack(player => {
       player.play()
-      sleep(10 millis)
+      sleep(10.millis)
       player seek 8.seconds
-      sleep(100 millis)
+      sleep(100.millis)
       assert(player.position.toSeconds >= 7)
       player seek 3.seconds
-      sleep(300 millis)
+      sleep(300.millis)
       val pos = player.position.toSeconds
       assert(pos >= 2 && pos <= 4)
     })
@@ -49,7 +49,7 @@ class PlaybackTests extends TestBase with Log {
     val stream = StreamSource.fromFile(file).toOneShot
     val player = new JavaSoundPlayer(stream)
     player.play()
-    sleep(4 seconds)
+    sleep(4.seconds)
     player.stop()
     player.close()
     stream.stream.close()
