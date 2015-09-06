@@ -13,6 +13,7 @@ object AudioBuild extends Build {
   val soundGroup = "com.googlecode.soundlibs"
 
   lazy val commonSettings = assemblySettings ++ Seq(
+    organization := "com.github.malliina",
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
     version := "1.7.0",
