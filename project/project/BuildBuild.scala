@@ -11,16 +11,22 @@ object BuildBuild extends Build {
     scalaVersion := "2.10.4",
     resolvers ++= Seq(
       "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
-      "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"),
+      "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/",
+      Resolver.url("bintray-sbt-plugin-releases",
+        url("http://dl.bintray.com/content/sbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns),
+      Resolver.url("malliina bintray sbt",
+        url("https://dl.bintray.com/malliina/sbt-plugins/"))(Resolver.ivyStylePatterns)
+    ),
     scalacOptions ++= Seq("-unchecked", "-deprecation")
   ) ++ sbtPlugins
 
   val mleGroup = "com.github.malliina"
 
   def sbtPlugins = Seq(
-    mleGroup % "sbt-utils" % "0.1.0",
+    mleGroup % "sbt-utils" % "0.2.1",
     mleGroup %% "ssh-client" % "0.0.4",
-    "com.eed3si9n" % "sbt-assembly" % "0.11.2"
+    "com.eed3si9n" % "sbt-assembly" % "0.11.2",
+    "me.lessis" % "bintray-sbt" % "0.3.0"
   ) map addSbtPlugin
 
   override lazy val projects = Seq(root)
