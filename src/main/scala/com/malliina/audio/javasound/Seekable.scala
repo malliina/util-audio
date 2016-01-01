@@ -1,10 +1,10 @@
-package com.mle.audio.javasound
+package com.malliina.audio.javasound
 
-import com.mle.util.Log
+import com.malliina.audio.meta.OneShotStream
+import com.malliina.storage.{StorageLong, StorageSize}
+import com.malliina.util.Log
+
 import scala.concurrent.duration._
-import com.mle.audio.meta.OneShotStream
-import com.mle.storage.StorageSize
-import com.mle.storage.StorageLong
 
 /**
  * @author Michael

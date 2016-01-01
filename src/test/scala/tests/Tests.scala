@@ -1,7 +1,8 @@
 package tests
 
+import com.malliina.audio.AudioImplicits
+import com.malliina.util.Log
 import org.scalatest.FunSuite
-import com.mle.util.Log
 
 /**
  *
@@ -11,7 +12,8 @@ class Tests extends FunSuite with Log {
   test("tests work") {}
 
   test("time formatting") {
-    import com.mle.audio.AudioImplicits._
+    import AudioImplicits._
+
     import concurrent.duration._
     def assertSeconds(secs: Int, expected: String) =
       assert(secs.seconds.readable === expected)

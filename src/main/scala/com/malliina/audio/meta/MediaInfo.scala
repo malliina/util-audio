@@ -1,10 +1,12 @@
-package com.mle.audio.meta
+package com.malliina.audio.meta
 
+import java.io.{BufferedInputStream, FileInputStream, InputStream}
 import java.net.URI
 import java.nio.file.{Files, Path}
+
+import com.malliina.storage.{StorageLong, StorageSize}
+
 import scala.concurrent.duration.Duration
-import com.mle.storage.{StorageSize, StorageLong}
-import java.io.{BufferedInputStream, FileInputStream, InputStream}
 
 /**
  * @author Michael

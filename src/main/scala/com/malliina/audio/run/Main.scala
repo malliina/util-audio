@@ -1,10 +1,10 @@
-package com.mle.audio.run
+package com.malliina.audio.run
 
 import java.nio.file.{Files, Path, Paths}
 
-import com.mle.audio.javasound.{FileJavaSoundPlayer, JavaSoundPlayer}
-import com.mle.storage.{StorageInt, StorageSize}
-import com.mle.util.Utils
+import com.malliina.audio.javasound.{FileJavaSoundPlayer, JavaSoundPlayer}
+import com.malliina.storage.{StorageInt, StorageSize}
+import com.malliina.util.Utils
 
 /**
  * @author Michael

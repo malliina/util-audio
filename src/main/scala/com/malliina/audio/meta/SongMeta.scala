@@ -1,10 +1,11 @@
-package com.mle.audio.meta
+package com.malliina.audio.meta
 
 import java.nio.file.{Files, Path}
-import com.mle.util.Log
+
+import com.malliina.util.Log
 import org.jaudiotagger.audio.AudioFileIO
+
 import scala.concurrent.duration._
-import com.mle.storage.StorageLong
 
 /**
  * @author Michael

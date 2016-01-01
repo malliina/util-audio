@@ -1,13 +1,14 @@
-package com.mle.audio.javasound
+package com.malliina.audio.javasound
 
 import java.io.InputStream
 
-import com.mle.audio.PlaybackEvents.TimeUpdated
-import com.mle.audio._
-import com.mle.audio.javasound.JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE
-import com.mle.audio.meta.OneShotStream
-import com.mle.storage.{StorageLong, StorageSize}
-import com.mle.util.Log
+import com.malliina.audio.{ExecutionContexts, PlaybackEvents}
+import PlaybackEvents.TimeUpdated
+import com.malliina.audio._
+import com.malliina.audio.javasound.JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE
+import com.malliina.audio.meta.OneShotStream
+import com.malliina.storage.{StorageLong, StorageSize}
+import com.malliina.util.Log
 import rx.lang.scala.subjects.BehaviorSubject
 import rx.lang.scala.{Observable, Subject, Subscription}
 

@@ -1,4 +1,4 @@
-package com.mle.audio.javasound
+package com.malliina.audio.javasound
 
 /**
  * Mix this in to [[JavaSoundPlayer]]s when you want to close the audio stream

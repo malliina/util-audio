@@ -1,4 +1,4 @@
-package com.mle.audio
+package com.malliina.audio
 
 import scala.concurrent.duration.Duration
 

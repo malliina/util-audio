@@ -2,9 +2,9 @@ package tests
 
 import java.nio.file.{Files, Path}
 
-import com.mle.audio.javasound.{FileJavaSoundPlayer, JavaSoundPlayer}
-import com.mle.file.FileUtilities
-import com.mle.util.Util
+import com.malliina.audio.javasound.{FileJavaSoundPlayer, JavaSoundPlayer}
+import com.malliina.file.FileUtilities
+import com.malliina.util.Util
 import org.apache.commons.io.FileUtils
 import org.scalatest.FunSuite
 

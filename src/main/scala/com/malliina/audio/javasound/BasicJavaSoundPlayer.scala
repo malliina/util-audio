@@ -1,12 +1,12 @@
-package com.mle.audio.javasound
+package com.malliina.audio.javasound
 
 import java.io.InputStream
 import java.net.URI
 import java.nio.file.Path
 
-import com.mle.audio.javasound.JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE
-import com.mle.audio.meta.StreamSource
-import com.mle.storage.StorageSize
+import com.malliina.audio.javasound.JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE
+import com.malliina.audio.meta.StreamSource
+import com.malliina.storage.StorageSize
 
 import scala.concurrent.duration.Duration
 

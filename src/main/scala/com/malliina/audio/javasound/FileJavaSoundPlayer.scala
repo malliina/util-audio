@@ -1,10 +1,10 @@
-package com.mle.audio.javasound
+package com.malliina.audio.javasound
 
 import java.nio.file.Path
 
-import com.mle.audio.javasound.JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE
-import com.mle.audio.meta.StreamSource
-import com.mle.storage.StorageSize
+import com.malliina.audio.javasound.JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE
+import com.malliina.audio.meta.StreamSource
+import com.malliina.storage.StorageSize
 
 /**
  * Use for audio files. Since this constructor opens an InputStream, trait SourceClosing is mixed in so that when this

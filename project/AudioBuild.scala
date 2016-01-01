@@ -9,20 +9,20 @@ object AudioBuild extends Build {
     .enablePlugins(bintray.BintrayPlugin)
     .settings(commonSettings: _*)
 
-  val mleGroup = "com.github.malliina"
+  val malliinaGroup = "com.malliina"
   val soundGroup = "com.googlecode.soundlibs"
 
   lazy val commonSettings = assemblySettings ++ Seq(
-    organization := "com.github.malliina",
+    organization := malliinaGroup,
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
-    version := "1.7.0",
+    version := "1.8.0",
     scalaVersion := "2.11.7",
-    crossScalaVersions := Seq(scalaVersion.value, "2.10.4"),
+    crossScalaVersions := Seq(scalaVersion.value, "2.10.6"),
     retrieveManaged := false,
     sbt.Keys.fork in Test := true,
     libraryDependencies ++= Seq(
-      mleGroup %% "util" % "2.0.0",
+      malliinaGroup %% "util" % "2.1.0",
       "org" % "jaudiotagger" % "2.0.3",
       soundGroup % "tritonus-share" % "0.3.7-2",
       soundGroup % "jlayer" % "1.0.1-1",

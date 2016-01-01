@@ -1,13 +1,15 @@
 package tests
 
-import scala.concurrent.duration.DurationInt
 import java.io._
-import com.mle.audio.javasound.JavaSoundPlayer
-import com.mle.audio.meta.{OneShotStream, StreamSource}
-import com.mle.storage.StorageInt
-import scala.concurrent.{Promise, Await, Future}
-import com.mle.audio.PlayerStates
-import com.mle.util.Log
+
+import com.malliina.audio.{ExecutionContexts, PlayerStates}
+import com.malliina.audio.javasound.JavaSoundPlayer
+import com.malliina.audio.meta.{OneShotStream, StreamSource}
+import com.malliina.storage.StorageInt
+import com.malliina.util.Log
+
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.{Await, Future, Promise}
 
 /**
  *
@@ -63,7 +65,7 @@ class PlaybackTests extends TestBase with Log {
     }
   }
   test("playing an empty PipedInputStream blocks, and throws 'IOException: mark/reset not supported' when its PipedOutputStream is closed") {
-    import com.mle.audio.ExecutionContexts.defaultPlaybackContext
+    import ExecutionContexts.defaultPlaybackContext
     val dur = 1.minute
     val size = 100.megs
     val out = new PipedOutputStream()

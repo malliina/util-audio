@@ -1,6 +1,7 @@
-package com.mle.audio
+package com.malliina.audio
 
-import javax.sound.sampled.{LineListener, LineEvent}
+import javax.sound.sampled.{LineEvent, LineListener}
+
 import scala.concurrent.duration.Duration
 
 /**

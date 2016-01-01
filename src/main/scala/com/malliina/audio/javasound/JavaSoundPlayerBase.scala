@@ -1,9 +1,11 @@
-package com.mle.audio.javasound
+package com.malliina.audio.javasound
 
-import javax.sound.sampled.{Control, FloatControl, BooleanControl, SourceDataLine}
-import com.mle.util.Log
+import javax.sound.sampled.{BooleanControl, Control, FloatControl, SourceDataLine}
+
+import com.malliina.audio.RichPlayer
+import com.malliina.util.Log
+
 import scala.concurrent.duration._
-import com.mle.audio.RichPlayer
 
 /**
  * @author Michael

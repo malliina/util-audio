@@ -1,12 +1,13 @@
-package com.mle.audio.javasound
+package com.malliina.audio.javasound
 
-import com.mle.util.Log
-import javax.sound.sampled._
-import com.mle.audio.PlayerStates
 import java.io.InputStream
-import com.mle.audio.AudioImplicits._
-import rx.lang.scala.Subject
 import javax.sound.sampled.DataLine.Info
+import javax.sound.sampled._
+
+import com.malliina.audio.AudioImplicits._
+import com.malliina.audio.PlayerStates
+import com.malliina.util.Log
+import rx.lang.scala.Subject
 
 object LineData {
   /**
@@ -34,6 +35,7 @@ class LineData(inStream: AudioInputStream, subject: Subject[PlayerStates.PlayerS
 
   def toPlayerEvent(lineEvent: LineEvent): PlayerStates.PlayerState = {
     import LineEvent.Type._
+
     import PlayerStates._
     val eventType = lineEvent.getType
     if (eventType == OPEN) Open

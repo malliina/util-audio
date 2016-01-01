@@ -4,10 +4,9 @@ import java.io.IOException
 import java.nio.file.{Files, Path}
 import javax.sound.sampled.{AudioSystem, UnsupportedAudioFileException}
 
-import com.mle.file.FileUtilities
-import com.mle.util.Log
+import com.malliina.file.FileUtilities
+import com.malliina.util.Log
 import org.scalatest.FunSuite
-
 
 /**
  * @author Michael

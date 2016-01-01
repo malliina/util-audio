@@ -1,4 +1,4 @@
-package com.mle.audio.meta
+package com.malliina.audio.meta
 
 import java.nio.file.Path
 import org.jaudiotagger.audio.AudioFileIO
