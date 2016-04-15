@@ -6,10 +6,14 @@ import javax.sound.sampled._
 
 import com.malliina.audio.AudioImplicits._
 import com.malliina.audio.PlayerStates
-import com.malliina.util.Log
+import com.malliina.audio.PlayerStates.PlayerState
+import com.malliina.audio.javasound.LineData.log
+import org.slf4j.LoggerFactory
 import rx.lang.scala.Subject
 
 object LineData {
+  private val log = LoggerFactory.getLogger(getClass)
+
   /** This factory method blocks as long as `stream` is empty, i.e. until an appropriate amount
     * of audio bytes has been made available to it.
     *
@@ -18,11 +22,11 @@ object LineData {
     * @param stream
     * @return
     */
-  def fromStream(stream: InputStream, subject: Subject[PlayerStates.PlayerState]) =
+  def fromStream(stream: InputStream, subject: Subject[PlayerState]) =
     new LineData(AudioSystem.getAudioInputStream(stream), subject)
 }
 
-class LineData(inStream: AudioInputStream, subject: Subject[PlayerStates.PlayerState]) extends Log {
+class LineData(inStream: AudioInputStream, subject: Subject[PlayerState]) {
   private val baseFormat = inStream.getFormat
   private val decodedFormat = toDecodedFormat(baseFormat)
   // this is read
@@ -32,7 +36,7 @@ class LineData(inStream: AudioInputStream, subject: Subject[PlayerStates.PlayerS
   line.addLineListener((lineEvent: LineEvent) => subject.onNext(toPlayerEvent(lineEvent)))
   line open decodedFormat
 
-  def toPlayerEvent(lineEvent: LineEvent): PlayerStates.PlayerState = {
+  def toPlayerEvent(lineEvent: LineEvent): PlayerState = {
     import LineEvent.Type._
 
     import PlayerStates._

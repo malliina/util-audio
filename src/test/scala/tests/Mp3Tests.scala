@@ -5,10 +5,12 @@ import java.nio.file.{Files, Path}
 import javax.sound.sampled.{AudioSystem, UnsupportedAudioFileException}
 
 import com.malliina.file.FileUtilities
-import com.malliina.util.Log
 import org.scalatest.FunSuite
+import org.slf4j.LoggerFactory
 
-class Mp3Tests extends FunSuite with Log {
+class Mp3Tests extends FunSuite {
+  private val log = LoggerFactory.getLogger(getClass)
+
   test("mp3 playback") {
     val musicFolder: Option[Path] = None // Paths.get("")
     musicFolder.foreach(folder => {

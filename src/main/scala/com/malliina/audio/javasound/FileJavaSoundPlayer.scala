@@ -2,7 +2,7 @@ package com.malliina.audio.javasound
 
 import java.nio.file.Path
 
-import com.malliina.audio.javasound.JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE
+import com.malliina.audio.javasound.JavaSoundPlayer.DefaultRwBufferSize
 import com.malliina.audio.meta.StreamSource
 import com.malliina.storage.StorageSize
 
@@ -11,5 +11,5 @@ import com.malliina.storage.StorageSize
   *
   * @param file file to play
   */
-class FileJavaSoundPlayer(file: Path, readWriteBufferSize: StorageSize = DEFAULT_RW_BUFFER_SIZE)
+class FileJavaSoundPlayer(file: Path, readWriteBufferSize: StorageSize = DefaultRwBufferSize)
   extends BasicJavaSoundPlayer(StreamSource.fromFile(file), readWriteBufferSize)

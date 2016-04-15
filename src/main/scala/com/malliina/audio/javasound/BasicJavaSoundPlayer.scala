@@ -4,13 +4,13 @@ import java.io.InputStream
 import java.net.URI
 import java.nio.file.Path
 
-import com.malliina.audio.javasound.JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE
+import com.malliina.audio.javasound.JavaSoundPlayer.DefaultRwBufferSize
 import com.malliina.audio.meta.StreamSource
 import com.malliina.storage.StorageSize
 
 import scala.concurrent.duration.Duration
 
-class BasicJavaSoundPlayer(media: StreamSource, readWriteBufferSize: StorageSize = DEFAULT_RW_BUFFER_SIZE)
+class BasicJavaSoundPlayer(media: StreamSource, readWriteBufferSize: StorageSize = DefaultRwBufferSize)
   extends JavaSoundPlayer(media.toOneShot, readWriteBufferSize)
     with SourceClosing {
 

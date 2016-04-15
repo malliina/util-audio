@@ -16,7 +16,7 @@ object AudioBuild extends Build {
     organization := malliinaGroup,
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
-    version := "1.9.0",
+    version := "2.0.0",
     scalaVersion := "2.11.7",
     crossScalaVersions := Seq(scalaVersion.value, "2.10.6"),
     retrieveManaged := false,

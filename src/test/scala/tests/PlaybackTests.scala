@@ -2,16 +2,15 @@ package tests
 
 import java.io._
 
-import com.malliina.audio.{ExecutionContexts, PlayerStates}
 import com.malliina.audio.javasound.JavaSoundPlayer
 import com.malliina.audio.meta.{OneShotStream, StreamSource}
+import com.malliina.audio.{ExecutionContexts, PlayerStates}
 import com.malliina.storage.StorageInt
-import com.malliina.util.Log
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future, Promise}
 
-class PlaybackTests extends TestBase with Log {
+class PlaybackTests extends TestBase {
   test("can play mp3 and can get duration, position") {
     withTestTrack(player => {
       assert(player.duration.toSeconds === 12)
@@ -20,6 +19,7 @@ class PlaybackTests extends TestBase with Log {
       assert(player.position.toSeconds > 2)
     })
   }
+
   test("can seek and get position afterwards") {
     withTestTrack(player => {
       player.play()
@@ -29,6 +29,7 @@ class PlaybackTests extends TestBase with Log {
       assert(player.position.toSeconds >= 2)
     })
   }
+
   test("can seek backwards") {
     withTestTrack(player => {
       player.play()
@@ -42,6 +43,7 @@ class PlaybackTests extends TestBase with Log {
       assert(pos >= 2 && pos <= 4)
     })
   }
+
   test("can stream") {
     val file = ensureTestMp3Exists()
     val stream = StreamSource.fromFile(file).toOneShot
@@ -60,6 +62,7 @@ class PlaybackTests extends TestBase with Log {
       new JavaSoundPlayer(stream)
     }
   }
+
   test("playing an empty PipedInputStream blocks, and throws 'IOException: mark/reset not supported' when its PipedOutputStream is closed") {
     import ExecutionContexts.defaultPlaybackContext
     val dur = 1.minute
@@ -81,6 +84,7 @@ class PlaybackTests extends TestBase with Log {
     assert(futureCompletesAsExpected)
     in.close()
   }
+
   test("onEndOfMedia fires when a track finishes playback") {
     withTestTrack(p => {
       p.play()
@@ -89,7 +93,7 @@ class PlaybackTests extends TestBase with Log {
 //      val s1 = p.events.subscribe(e => log.info(s"event: $e"))
       val promise = Promise[PlayerStates.PlayerState]()
       val s = p.events.filter(_ == PlayerStates.EndOfMedia).subscribe(o => promise.trySuccess(o))
-      val maybeEom = Await.result(promise.future, 20 seconds)
+      val maybeEom = Await.result(promise.future, 20.seconds)
       assert(maybeEom === PlayerStates.EndOfMedia)
       s.unsubscribe()
 //      s1.unsubscribe()

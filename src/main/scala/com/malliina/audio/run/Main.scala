@@ -15,7 +15,7 @@ object Main {
   def main(args: Array[String]): Unit = {
     val maybePath = args.headOption
       .fold[Either[ErrorMessage, Path]](Left(noTrack))(validate)
-    val maybeStorage = args.tail.headOption.map(parseSize).getOrElse(Right(JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE))
+    val maybeStorage = args.tail.headOption.map(parseSize).getOrElse(Right(JavaSoundPlayer.DefaultRwBufferSize))
     val maybeConf = for {
       path <- maybePath.right
       size <- maybeStorage.right

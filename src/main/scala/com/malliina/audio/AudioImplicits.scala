@@ -5,7 +5,7 @@ import javax.sound.sampled.{LineEvent, LineListener}
 import scala.concurrent.duration.Duration
 
 object AudioImplicits {
-  implicit def lineEvent2listener(onEvent: LineEvent => Unit) = new LineListener {
+  implicit def lineEvent2listener(onEvent: LineEvent => Unit): LineListener = new LineListener {
     def update(event: LineEvent): Unit = onEvent(event)
   }
 

@@ -5,6 +5,7 @@ import scala.concurrent.duration.DurationInt
 
 class SeekTest extends TestBase {
   val file = None // Paths get ""
+
   test("seeking a file is accurate") {
     file.foreach(f => {
       val player = new FileJavaSoundPlayer(f)

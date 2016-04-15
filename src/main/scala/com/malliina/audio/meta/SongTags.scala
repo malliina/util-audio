@@ -11,7 +11,7 @@ object SongTags {
     val relativePath = root relativize path
     val maybeParent = Option(relativePath.getParent)
     val title = SongMeta.titleFromFileName(path)
-    val album = maybeParent.map(p => Option(p.getFileName).map(_.toString)).flatten.getOrElse("")
+    val album = maybeParent.flatMap(p => Option(p.getFileName).map(_.toString)).getOrElse("")
     // Both getParent and getFileName may return null. Thanks, Java.
     val artist = maybeParent.map(p => {
       Option(p.getParent).map(pp => {

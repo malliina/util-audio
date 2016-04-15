@@ -39,6 +39,3 @@ case class FileSource(file: Path, duration: Duration) extends StreamSource {
 
   def openStream: InputStream = new BufferedInputStream(new FileInputStream(file.toFile))
 }
-
-
-

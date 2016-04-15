@@ -2,14 +2,13 @@ package com.malliina.audio.meta
 
 import java.nio.file.{Files, Path}
 
-import com.malliina.util.Log
 import org.jaudiotagger.audio.AudioFileIO
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.DurationDouble
 
 case class SongMeta(media: StreamSource, tags: SongTags)
 
-object SongMeta extends Log {
+object SongMeta {
   def fromPath(path: Path): SongMeta = fromPath(path, Option(path.getRoot).getOrElse(path))
 
   def fromPath(absolutePath: Path, root: Path): SongMeta = {
@@ -23,7 +22,7 @@ object SongMeta extends Log {
     val relativePath = root relativize path
     val maybeParent = Option(relativePath.getParent)
     val title = titleFromFileName(path)
-    val album = maybeParent.map(p => Option(p.getFileName).map(_.toString)).flatten.getOrElse("")
+    val album = maybeParent.flatMap(p => Option(p.getFileName).map(_.toString)).getOrElse("")
     // Both getParent and getFileName may return null. Thanks, Java.
     val artist = maybeParent.map(p => {
       Option(p.getParent).map(pp => {
@@ -35,7 +34,7 @@ object SongMeta extends Log {
 
   def titleFromFileName(path: Path) = {
     val fileName = Option(path.getFileName).map(_.toString).getOrElse("")
-    if (fileName endsWith ".mp3") fileName.slice(0, fileName.size - 4) else fileName
+    if (fileName endsWith ".mp3") fileName.slice(0, fileName.length - 4) else fileName
   }
 
   def titleOf(absolutePath: Path) = {

@@ -1,10 +1,9 @@
 package tests
 
 import com.malliina.audio.AudioImplicits
-import com.malliina.util.Log
 import org.scalatest.FunSuite
 
-class Tests extends FunSuite with Log {
+class Tests extends FunSuite {
   test("tests work") {}
 
   test("time formatting") {

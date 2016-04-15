@@ -5,13 +5,12 @@ import java.io.InputStream
 import com.malliina.audio.{ExecutionContexts, PlaybackEvents}
 import PlaybackEvents.TimeUpdated
 import com.malliina.audio._
-import com.malliina.audio.javasound.JavaSoundPlayer.DEFAULT_RW_BUFFER_SIZE
+import com.malliina.audio.javasound.JavaSoundPlayer.{DefaultRwBufferSize, log}
 import com.malliina.audio.meta.OneShotStream
-import com.malliina.storage.{StorageLong, StorageSize}
-import com.malliina.util.Log
+import com.malliina.storage.{StorageInt, StorageLong, StorageSize}
+import org.slf4j.LoggerFactory
 import rx.lang.scala.subjects.BehaviorSubject
 import rx.lang.scala.{Observable, Subject, Subscription}
-
 import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -28,12 +27,12 @@ import scala.concurrent.{ExecutionContext, Future}
   * @see [[UriJavaSoundPlayer]]
   * @param media media info to play
   */
-class JavaSoundPlayer(val media: OneShotStream, readWriteBufferSize: StorageSize = DEFAULT_RW_BUFFER_SIZE)(implicit val ec: ExecutionContext = ExecutionContexts.defaultPlaybackContext)
+class JavaSoundPlayer(val media: OneShotStream,
+                      readWriteBufferSize: StorageSize = DefaultRwBufferSize)(implicit val ec: ExecutionContext = ExecutionContexts.defaultPlaybackContext)
   extends IPlayer
     with JavaSoundPlayerBase
     with StateAwarePlayer
-    with AutoCloseable
-    with Log {
+    with AutoCloseable {
 
   def this(stream: InputStream,
            duration: Duration,
@@ -242,5 +241,6 @@ class JavaSoundPlayer(val media: OneShotStream, readWriteBufferSize: StorageSize
 }
 
 object JavaSoundPlayer {
-  val DEFAULT_RW_BUFFER_SIZE = 4096.bytes
+  private val log = LoggerFactory.getLogger(getClass)
+  val DefaultRwBufferSize = 4096.bytes
 }
