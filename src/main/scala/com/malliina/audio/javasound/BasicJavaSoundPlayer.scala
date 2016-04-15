@@ -10,12 +10,9 @@ import com.malliina.storage.StorageSize
 
 import scala.concurrent.duration.Duration
 
-/**
- *
- * @author mle
- */
 class BasicJavaSoundPlayer(media: StreamSource, readWriteBufferSize: StorageSize = DEFAULT_RW_BUFFER_SIZE)
-  extends JavaSoundPlayer(media.toOneShot, readWriteBufferSize) with SourceClosing {
+  extends JavaSoundPlayer(media.toOneShot, readWriteBufferSize)
+    with SourceClosing {
 
   override def resetStream(oldStream: InputStream): InputStream = {
     oldStream.close()

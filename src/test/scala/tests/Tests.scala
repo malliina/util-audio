@@ -4,10 +4,6 @@ import com.malliina.audio.AudioImplicits
 import com.malliina.util.Log
 import org.scalatest.FunSuite
 
-/**
- *
- * @author mle
- */
 class Tests extends FunSuite with Log {
   test("tests work") {}
 

@@ -2,9 +2,6 @@ package com.malliina.audio
 
 import scala.concurrent.duration.Duration
 
-/**
- * @author Michael
- */
 trait RichPlayer extends IPlayer {
   def duration: Duration
 

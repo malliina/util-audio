@@ -7,9 +7,6 @@ import org.jaudiotagger.audio.AudioFileIO
 
 import scala.concurrent.duration._
 
-/**
- * @author Michael
- */
 case class SongMeta(media: StreamSource, tags: SongTags)
 
 object SongMeta extends Log {

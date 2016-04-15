@@ -8,9 +8,6 @@ import com.malliina.file.FileUtilities
 import com.malliina.util.Log
 import org.scalatest.FunSuite
 
-/**
- * @author Michael
- */
 class Mp3Tests extends FunSuite with Log {
   test("mp3 playback") {
     val musicFolder: Option[Path] = None // Paths.get("")

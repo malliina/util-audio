@@ -3,10 +3,6 @@ package tests
 import com.malliina.audio.javasound.FileJavaSoundPlayer
 import scala.concurrent.duration.DurationInt
 
-/**
- *
- * @author mle
- */
 class SeekTest extends TestBase {
   val file = None // Paths get ""
   test("seeking a file is accurate") {

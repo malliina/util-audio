@@ -7,9 +7,6 @@ import com.malliina.util.Log
 
 import scala.concurrent.duration._
 
-/**
- * @author Michael
- */
 trait JavaSoundPlayerBase extends RichPlayer with Seekable with Log {
   protected def audioLine: SourceDataLine
 

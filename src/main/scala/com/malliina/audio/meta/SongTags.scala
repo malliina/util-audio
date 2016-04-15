@@ -4,9 +4,6 @@ import java.nio.file.Path
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.FieldKey
 
-/**
- * @author Michael
- */
 case class SongTags(title: String, album: String, artist: String)
 
 object SongTags {

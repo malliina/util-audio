@@ -10,10 +10,6 @@ import org.scalatest.FunSuite
 
 import scala.concurrent.duration.Duration
 
-/**
- *
- * @author mle
- */
 class TestBase extends FunSuite {
   val fileName = "mpthreetest.mp3"
   val tempFile = FileUtilities.tempDir resolve fileName

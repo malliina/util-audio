@@ -2,10 +2,6 @@ package tests
 
 import com.malliina.audio.javasound.FileJavaSoundPlayer
 
-/**
- *
- * @author mle
- */
 class ControlTests extends TestBase {
   test("supported controls") {
     val file = ensureTestMp3Exists()

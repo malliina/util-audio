@@ -10,15 +10,14 @@ import com.malliina.util.Log
 import rx.lang.scala.Subject
 
 object LineData {
-  /**
-   * This factory method blocks as long as `stream` is empty, i.e. until an appropriate amount
-   * of audio bytes has been made available to it.
-   *
-   * Therefore you must not, in the same thread, call this before bytes are made available to the stream.
-   *
-   * @param stream
-   * @return
-   */
+  /** This factory method blocks as long as `stream` is empty, i.e. until an appropriate amount
+    * of audio bytes has been made available to it.
+    *
+    * Therefore you must not, in the same thread, call this before bytes are made available to the stream.
+    *
+    * @param stream
+    * @return
+    */
   def fromStream(stream: InputStream, subject: Subject[PlayerStates.PlayerState]) =
     new LineData(AudioSystem.getAudioInputStream(stream), subject)
 }

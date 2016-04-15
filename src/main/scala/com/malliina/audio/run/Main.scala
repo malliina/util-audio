@@ -6,9 +6,6 @@ import com.malliina.audio.javasound.{FileJavaSoundPlayer, JavaSoundPlayer}
 import com.malliina.storage.{StorageInt, StorageSize}
 import com.malliina.util.Utils
 
-/**
- * @author Michael
- */
 object Main {
   type ErrorMessage = String
   val noTrack = "Please specify a path to an MP3 as a command line parameter."

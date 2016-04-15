@@ -2,9 +2,6 @@ package com.malliina.audio
 
 import javax.sound.sampled.FloatControl
 
-/**
- * @author Michael
- */
 trait GainHack extends RichPlayer {
   def gainControl: FloatControl
 

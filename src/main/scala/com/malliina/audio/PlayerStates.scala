@@ -1,8 +1,5 @@
 package com.malliina.audio
 
-/**
- * @author Michael
- */
 object PlayerStates extends Enumeration {
   type PlayerState = Value
   val Unrealized, Realizing, Realized,

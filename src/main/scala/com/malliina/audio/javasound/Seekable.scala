@@ -6,9 +6,6 @@ import com.malliina.util.Log
 
 import scala.concurrent.duration._
 
-/**
- * @author Michael
- */
 trait Seekable extends Log {
   // Helper variable for seeking, needed because java sound getters return the time since the line was opened,
   // which is not equivalent to the track position if the user has seeked.

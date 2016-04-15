@@ -2,10 +2,6 @@ package com.malliina.audio
 
 import scala.concurrent.duration.Duration
 
-/**
- *
- * @author mle
- */
 object PlaybackEvents {
 
   trait PlaybackEvent

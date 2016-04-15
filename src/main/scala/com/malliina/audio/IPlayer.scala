@@ -2,9 +2,6 @@ package com.malliina.audio
 
 import scala.concurrent.duration.Duration
 
-/**
- * @author Michael
- */
 trait IPlayer extends AutoCloseable {
   /**
    * Starts or resumes playback, whichever makes sense.

@@ -11,10 +11,6 @@ import com.malliina.util.Log
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future, Promise}
 
-/**
- *
- * @author mle
- */
 class PlaybackTests extends TestBase with Log {
   test("can play mp3 and can get duration, position") {
     withTestTrack(player => {

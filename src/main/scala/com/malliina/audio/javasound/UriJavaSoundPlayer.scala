@@ -8,13 +8,9 @@ import com.malliina.storage.StorageSize
 
 import scala.concurrent.duration.Duration
 
-/**
- *
- * @author mle
- */
 class UriJavaSoundPlayer(uri: URI,
                          duration: Duration,
                          size: StorageSize,
                          readWriteBufferSize: StorageSize = DEFAULT_RW_BUFFER_SIZE)
   extends BasicJavaSoundPlayer(StreamSource.fromURI(uri, duration, size), readWriteBufferSize)
-  with SourceClosing
+    with SourceClosing

@@ -15,26 +15,25 @@ import rx.lang.scala.{Observable, Subject, Subscription}
 import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * A music player. Plays one media source. To change source, for example to change track, create a new player.
- *
- * The user needs to provide the media length and size to enable seek functionality. Seeking streams which cannot be
- * reopened is only supported if InputStream.markSupported() of `media.stream` is true, and even then the support is
- * buggy. markSupported() is true at least for [[java.io.BufferedInputStream]]s.
- *
- * The stream provided in `media` is not by default closed when the player is closed, but if you wish to do so,
- * subclass this player and override `close()` accordingly or mix in trait [[SourceClosing]].
- *
- * @see [[FileJavaSoundPlayer]]
- * @see [[UriJavaSoundPlayer]]
- * @param media media info to play
- */
+/** A music player. Plays one media source. To change source, for example to change track, create a new player.
+  *
+  * The user needs to provide the media length and size to enable seek functionality. Seeking streams which cannot be
+  * reopened is only supported if InputStream.markSupported() of `media.stream` is true, and even then the support is
+  * buggy. markSupported() is true at least for [[java.io.BufferedInputStream]]s.
+  *
+  * The stream provided in `media` is not by default closed when the player is closed, but if you wish to do so,
+  * subclass this player and override `close()` accordingly or mix in trait [[SourceClosing]].
+  *
+  * @see [[FileJavaSoundPlayer]]
+  * @see [[UriJavaSoundPlayer]]
+  * @param media media info to play
+  */
 class JavaSoundPlayer(val media: OneShotStream, readWriteBufferSize: StorageSize = DEFAULT_RW_BUFFER_SIZE)(implicit val ec: ExecutionContext = ExecutionContexts.defaultPlaybackContext)
   extends IPlayer
-  with JavaSoundPlayerBase
-  with StateAwarePlayer
-  with AutoCloseable
-  with Log {
+    with JavaSoundPlayerBase
+    with StateAwarePlayer
+    with AutoCloseable
+    with Log {
 
   def this(stream: InputStream,
            duration: Duration,
@@ -46,10 +45,9 @@ class JavaSoundPlayer(val media: OneShotStream, readWriteBufferSize: StorageSize
   protected var stream = media.stream
   tryMarkStream()
   private val subject = BehaviorSubject[PlayerStates.PlayerState](PlayerStates.Closed)
-  /**
-   * I use a Subject because the audio line might change and it seems easier then to keep one subject
-   * instead of reacting to each audio line change in each observable (in addition to its events).
-   */
+  /** I use a Subject because the audio line might change and it seems easier then to keep one subject
+    * instead of reacting to each audio line change in each observable (in addition to its events).
+    */
   private val playbackSubject = BehaviorSubject[PlaybackEvents.PlaybackEvent](PlaybackEvents.Closed)
   private val pollingObservable = Observable.interval(500.millis)
   protected var lineData: LineData = newLine(stream, subject)
@@ -57,17 +55,16 @@ class JavaSoundPlayer(val media: OneShotStream, readWriteBufferSize: StorageSize
   private var playThread: Option[Future[Unit]] = None
 
   /**
-   * @return the current player state and any future states
-   */
+    * @return the current player state and any future states
+    */
   def events: Observable[PlayerStates.PlayerState] = subject
 
-  /**
-   * A stream of time update events. Emits the current playback position, then emits at least one event per second
-   * provided that the playback position changes. If there is no progress, for example if playback is stopped, no
-   * events are emitted.
-   *
-   * @return time update events
-   */
+  /** A stream of time update events. Emits the current playback position, then emits at least one event per second
+    * provided that the playback position changes. If there is no progress, for example if playback is stopped, no
+    * events are emitted.
+    *
+    * @return time update events
+    */
   def timeUpdates: Observable[PlaybackEvents.TimeUpdated] = Observable(subscriber => {
     var pollSubscription: Option[Subscription] = None
     var latestPosition = position
@@ -119,20 +116,19 @@ class JavaSoundPlayer(val media: OneShotStream, readWriteBufferSize: StorageSize
     audioLine.stop()
   }
 
-  /**
-   * Regardless of whether the user seeks backwards or forwards, here is what we do:
-   *
-   * Reset the stream to its initial position. Skip bytes from the beginning. (Optionally continue playback.)
-   *
-   * The stream needs to support mark so that we can mark the initial position (constructor). Subsequent calls to
-   * reset will therefore go to the initial position. Then we can skip the sufficient amount of bytes and arrive at
-   * the correct position. Otherwise seeking would just skip bytes forward every time, relative to the current
-   * position.
-   *
-   * This can still be spectacularly inaccurate if a VBR file is seeked but that is a secondary problem.
-   *
-   * @param pos position to seek to
-   */
+  /** Regardless of whether the user seeks backwards or forwards, here is what we do:
+    *
+    * Reset the stream to its initial position. Skip bytes from the beginning. (Optionally continue playback.)
+    *
+    * The stream needs to support mark so that we can mark the initial position (constructor). Subsequent calls to
+    * reset will therefore go to the initial position. Then we can skip the sufficient amount of bytes and arrive at
+    * the correct position. Otherwise seeking would just skip bytes forward every time, relative to the current
+    * position.
+    *
+    * This can still be spectacularly inaccurate if a VBR file is seeked but that is a secondary problem.
+    *
+    * @param pos position to seek to
+    */
   def seek(pos: Duration): Unit = {
     seekProblem.map(problem => log.warn(problem)).getOrElse {
       val bytes = timeToBytes(pos)
@@ -164,15 +160,14 @@ class JavaSoundPlayer(val media: OneShotStream, readWriteBufferSize: StorageSize
     lineData = newLine(stream, subject)
   }
 
-  /**
-   * Returns a stream of the media reset to its initial read position. Helper method for seeking.
-   *
-   * The default implementation merely calls `reset()` on the [[InputStream]] and returns the same instance. If
-   * possible, override this method, close and open a new stream instead.
-   *
-   * @see [[BasicJavaSoundPlayer]]
-   * @return a stream of the media reset to its initial read position
-   */
+  /** Returns a stream of the media reset to its initial read position. Helper method for seeking.
+    *
+    * The default implementation merely calls `reset()` on the [[InputStream]] and returns the same instance. If
+    * possible, override this method, close and open a new stream instead.
+    *
+    * @see [[BasicJavaSoundPlayer]]
+    * @return a stream of the media reset to its initial read position
+    */
   protected def resetStream(oldStream: InputStream): InputStream = {
     oldStream.reset()
     oldStream
@@ -184,12 +179,11 @@ class JavaSoundPlayer(val media: OneShotStream, readWriteBufferSize: StorageSize
     startedFromMicros = 0L
   }
 
-  /**
-   * Closes the current line, starts from the beginning and then skips to the specified byte count.
-   *
-   * @param byteCount bytes to skip from start of track
-   * @return actual bytes skipped from the beginning of the media
-   */
+  /** Closes the current line, starts from the beginning and then skips to the specified byte count.
+    *
+    * @param byteCount bytes to skip from start of track
+    * @return actual bytes skipped from the beginning of the media
+    */
   private def seekBytes(byteCount: StorageSize): StorageSize = {
     // saves state
     val wasPlaying = lineData.state == PlayerStates.Started

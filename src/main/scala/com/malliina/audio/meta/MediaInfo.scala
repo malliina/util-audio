@@ -8,10 +8,6 @@ import com.malliina.storage.{StorageLong, StorageSize}
 
 import scala.concurrent.duration.Duration
 
-/**
- * @author Michael
- */
-
 trait MediaMeta {
   def duration: Duration
 
