@@ -22,7 +22,7 @@ object AudioBuild extends Build {
     retrieveManaged := false,
     sbt.Keys.fork in Test := true,
     libraryDependencies ++= Seq(
-      malliinaGroup %% "util" % "2.3.0",
+      malliinaGroup %% "util" % "2.4.1",
       "org" % "jaudiotagger" % "2.0.3",
       soundGroup % "tritonus-share" % "0.3.7-2",
       soundGroup % "jlayer" % "1.0.1-1",
