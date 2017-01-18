@@ -20,7 +20,6 @@ object BuildBuild {
 
   def sbtPlugins = Seq(
     mleGroup % "sbt-utils" % "0.5.0",
-    "com.eed3si9n" % "sbt-assembly" % "0.11.2",
-    "me.lessis" % "bintray-sbt" % "0.3.0"
+    "com.eed3si9n" % "sbt-assembly" % "0.11.2"
   ) map addSbtPlugin
 }
