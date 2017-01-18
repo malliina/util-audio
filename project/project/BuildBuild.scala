@@ -1,13 +1,9 @@
 import sbt.Keys._
 import sbt._
 
-/**
- *
- * @author mle
- */
-object BuildBuild extends Build {
+object BuildBuild {
   // "build.sbt" goes here
-  override lazy val settings = super.settings ++ Seq(
+  lazy val settings = Seq(
     scalaVersion := "2.10.6",
     resolvers ++= Seq(
       "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
@@ -20,14 +16,11 @@ object BuildBuild extends Build {
     scalacOptions ++= Seq("-unchecked", "-deprecation")
   ) ++ sbtPlugins
 
-  val mleGroup = "com.github.malliina"
+  val mleGroup = "com.malliina"
 
   def sbtPlugins = Seq(
-    mleGroup % "sbt-utils" % "0.2.1",
+    mleGroup % "sbt-utils" % "0.5.0",
     "com.eed3si9n" % "sbt-assembly" % "0.11.2",
     "me.lessis" % "bintray-sbt" % "0.3.0"
   ) map addSbtPlugin
-
-  override lazy val projects = Seq(root)
-  lazy val root = Project("plugins", file("."))
 }
