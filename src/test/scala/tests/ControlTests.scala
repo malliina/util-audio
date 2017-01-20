@@ -4,13 +4,13 @@ import com.malliina.audio.javasound.FileJavaSoundPlayer
 
 class ControlTests extends TestBase {
 
-  test("supported controls") {
+  ignore("supported controls") {
     val file = ensureTestMp3Exists()
     val player = new FileJavaSoundPlayer(file)
     assert(player.canAdjustVolume)
   }
 
-  test("volume conversions") {
+  ignore("volume conversions") {
     val file = ensureTestMp3Exists()
     val player = new FileJavaSoundPlayer(file)
     val e1 = player.externalVolumeValue(25000, 0, 65663)

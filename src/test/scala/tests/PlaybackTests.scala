@@ -11,27 +11,27 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future, Promise}
 
 class PlaybackTests extends TestBase {
-  test("can play mp3 and can get duration, position") {
-    withTestTrack(player => {
+  ignore("can play mp3 and can get duration, position") {
+    withTestTrack { player =>
       assert(player.duration.toSeconds === 12)
       player.play()
       Thread.sleep(4000)
       assert(player.position.toSeconds > 2)
-    })
+    }
   }
 
-  test("can seek and get position afterwards") {
-    withTestTrack(player => {
+  ignore("can seek and get position afterwards") {
+    withTestTrack { player =>
       player.play()
       sleep(100.millis)
       player seek 3.seconds
       sleep(500.millis)
       assert(player.position.toSeconds >= 2)
-    })
+    }
   }
 
-  test("can seek backwards") {
-    withTestTrack(player => {
+  ignore("can seek backwards") {
+    withTestTrack { player =>
       player.play()
       sleep(10.millis)
       player seek 8.seconds
@@ -41,10 +41,10 @@ class PlaybackTests extends TestBase {
       sleep(300.millis)
       val pos = player.position.toSeconds
       assert(pos >= 2 && pos <= 4)
-    })
+    }
   }
 
-  test("can stream") {
+  ignore("can stream") {
     val file = ensureTestMp3Exists()
     val stream = StreamSource.fromFile(file).toOneShot
     val player = new JavaSoundPlayer(stream)
@@ -54,6 +54,7 @@ class PlaybackTests extends TestBase {
     player.close()
     stream.stream.close()
   }
+
   test("initialize player with closed stream throws IOException") {
     val file = ensureTestMp3Exists()
     val stream = StreamSource.fromFile(file).toOneShot
@@ -63,7 +64,7 @@ class PlaybackTests extends TestBase {
     }
   }
 
-  test("playing an empty PipedInputStream blocks, and throws 'IOException: mark/reset not supported' when its PipedOutputStream is closed") {
+  ignore("playing an empty PipedInputStream blocks, and throws 'IOException: mark/reset not supported' when its PipedOutputStream is closed") {
     import ExecutionContexts.defaultPlaybackContext
     val dur = 1.minute
     val size = 100.megs
@@ -85,18 +86,18 @@ class PlaybackTests extends TestBase {
     in.close()
   }
 
-  test("onEndOfMedia fires when a track finishes playback") {
-    withTestTrack(p => {
+  ignore("onEndOfMedia fires when a track finishes playback") {
+    withTestTrack { p =>
       p.play()
       sleep(100.millis)
       p seek 9.seconds
-//      val s1 = p.events.subscribe(e => log.info(s"event: $e"))
+      //      val s1 = p.events.subscribe(e => log.info(s"event: $e"))
       val promise = Promise[PlayerStates.PlayerState]()
       val s = p.events.filter(_ == PlayerStates.EndOfMedia).subscribe(o => promise.trySuccess(o))
       val maybeEom = Await.result(promise.future, 20.seconds)
       assert(maybeEom === PlayerStates.EndOfMedia)
       s.unsubscribe()
-//      s1.unsubscribe()
-    })
+      //      s1.unsubscribe()
+    }
   }
 }
