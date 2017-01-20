@@ -8,18 +8,17 @@ object BuildBuild {
     resolvers ++= Seq(
       "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/",
-      Resolver.url("bintray-sbt-plugin-releases",
-        url("http://dl.bintray.com/content/sbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns),
-      Resolver.url("malliina bintray sbt",
-        url("https://dl.bintray.com/malliina/sbt-plugins/"))(Resolver.ivyStylePatterns)
+      ivyResolver("bintray-sbt-plugin-releases", "http://dl.bintray.com/content/sbt/sbt-plugin-releases"),
+      ivyResolver("malliina bintray sbt", "https://dl.bintray.com/malliina/sbt-plugins/")
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation")
   ) ++ sbtPlugins
 
-  val mleGroup = "com.malliina"
+  def ivyResolver(name: String, urlStr: String) =
+    Resolver.url(name, url(urlStr))(Resolver.ivyStylePatterns)
 
   def sbtPlugins = Seq(
-    mleGroup % "sbt-utils" % "0.5.0",
+    "com.malliina" % "sbt-utils" % "0.5.0",
     "com.eed3si9n" % "sbt-assembly" % "0.11.2"
   ) map addSbtPlugin
 }

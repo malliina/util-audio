@@ -1,9 +1,8 @@
 import com.malliina.sbtutils.{SbtProjects, SbtUtils}
-import sbt._
 import sbt.Keys._
+import sbt._
 import sbtassembly.Plugin.AssemblyKeys._
 import sbtassembly.Plugin._
-import xerial.sbt.Sonatype.SonatypeKeys
 
 object AudioBuild {
   lazy val utilAudio = SbtProjects.mavenPublishProject("util-audio")
@@ -13,11 +12,10 @@ object AudioBuild {
   val soundGroup = "com.googlecode.soundlibs"
 
   lazy val commonSettings = assemblySettings ++ Seq(
-    SonatypeKeys.sonatypeProfileName := "com.github.malliina",
     organization := malliinaGroup,
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
-    version := "2.0.1",
+    version := "2.0.2",
     scalaVersion := "2.11.8",
     libraryDependencies ++= Seq(
       malliinaGroup %% "util" % "2.4.1",
