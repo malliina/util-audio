@@ -15,10 +15,10 @@ object AudioBuild {
     organization := malliinaGroup,
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
-    version := "2.0.2",
+    version := "2.1.0",
     scalaVersion := "2.11.8",
     libraryDependencies ++= Seq(
-      malliinaGroup %% "util" % "2.4.1",
+      malliinaGroup %% "util" % "2.5.0",
       "org" % "jaudiotagger" % "2.0.3",
       soundGroup % "tritonus-share" % "0.3.7-2",
       soundGroup % "jlayer" % "1.0.1-1",
