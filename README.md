@@ -7,7 +7,7 @@ A library for audio playback on the JVM. Supports MP3s.
 
 ## Installation
 
-    "com.malliina" %% "util-audio" % "2.0.0"
+    "com.malliina" %% "util-audio" % "2.2.0"
 
 ## Code
 
