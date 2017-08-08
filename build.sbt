@@ -10,6 +10,7 @@ SbtUtils.gitUserName := "malliina"
 SbtUtils.developerName := "Michael Skogberg"
 scalaVersion := "2.12.3"
 crossScalaVersions := Seq("2.11.11", scalaVersion.value)
+releaseCrossBuild := true
 libraryDependencies ++= Seq(
   malliinaGroup %% "util" % "2.8.0",
   "org" % "jaudiotagger" % "2.0.3",
