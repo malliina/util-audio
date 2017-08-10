@@ -1,16 +1,17 @@
 package com.malliina.audio.javasound
 
 import java.io.InputStream
+import java.util.concurrent.atomic.AtomicBoolean
 
-import com.malliina.audio.{ExecutionContexts, PlaybackEvents}
-import PlaybackEvents.TimeUpdated
-import com.malliina.audio._
+import com.malliina.audio.PlaybackEvents.TimeUpdated
 import com.malliina.audio.javasound.JavaSoundPlayer.{DefaultRwBufferSize, log}
 import com.malliina.audio.meta.OneShotStream
+import com.malliina.audio.{PlaybackEvents, _}
 import com.malliina.storage.{StorageInt, StorageLong, StorageSize}
 import org.slf4j.LoggerFactory
 import rx.lang.scala.subjects.BehaviorSubject
 import rx.lang.scala.{Observable, Subject, Subscription}
+
 import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -23,12 +24,14 @@ import scala.concurrent.{ExecutionContext, Future}
   * The stream provided in `media` is not by default closed when the player is closed, but if you wish to do so,
   * subclass this player and override `close()` accordingly or mix in trait [[SourceClosing]].
   *
+  * I think it's preferred to use an ExecutionContext with one thread only.
+  *
   * @see [[FileJavaSoundPlayer]]
   * @see [[UriJavaSoundPlayer]]
   * @param media media info to play
   */
 class JavaSoundPlayer(val media: OneShotStream,
-                      readWriteBufferSize: StorageSize = DefaultRwBufferSize)(implicit val ec: ExecutionContext = ExecutionContexts.defaultPlaybackContext)
+                      readWriteBufferSize: StorageSize = DefaultRwBufferSize)(implicit val ec: ExecutionContext = ExecutionContexts.singleThreadContext)
   extends IPlayer
     with JavaSoundPlayerBase
     with StateAwarePlayer
@@ -50,8 +53,10 @@ class JavaSoundPlayer(val media: OneShotStream,
   private val playbackSubject = BehaviorSubject[PlaybackEvents.PlaybackEvent](PlaybackEvents.Closed)
   private val pollingObservable = Observable.interval(500.millis)
   protected var lineData: LineData = newLine(stream, subject)
-  private var active = false
+  private val active = new AtomicBoolean(false)
   private var playThread: Option[Future[Unit]] = None
+
+  def isActive = active.get()
 
   /**
     * @return the current player state and any future states
@@ -64,7 +69,7 @@ class JavaSoundPlayer(val media: OneShotStream,
     *
     * @return time update events
     */
-  def timeUpdates: Observable[PlaybackEvents.TimeUpdated] = Observable(subscriber => {
+  def timeUpdates: Observable[PlaybackEvents.TimeUpdated] = Observable { subscriber =>
     var pollSubscription: Option[Subscription] = None
     var latestPosition = position
     subscriber onNext TimeUpdated(latestPosition)
@@ -83,7 +88,7 @@ class JavaSoundPlayer(val media: OneShotStream,
     })
     pollSubscription.foreach(subscriber.add)
     subscriber add timeSubscription
-  })
+  }
 
   def playbackEvents: Observable[PlaybackEvents.PlaybackEvent] = playbackSubject
 
@@ -105,13 +110,13 @@ class JavaSoundPlayer(val media: OneShotStream,
       // After end of media, the InputStream is closed and cannot be reused. Therefore this player cannot be used.
       // It's incorrect to call methods on a closed player. In principle we should throw an exception here, but I try
       // to resist the path of the IllegalStateException.
-      case anythingElse =>
+      case _ =>
         startPlayback()
     }
   }
 
   def stop() {
-    active = false
+    active.set(false)
     audioLine.stop()
   }
 
@@ -173,7 +178,7 @@ class JavaSoundPlayer(val media: OneShotStream,
   }
 
   private def closeLine() {
-    active = false
+    active.set(false)
     lineData.close()
     startedFromMicros = 0L
   }
@@ -199,23 +204,25 @@ class JavaSoundPlayer(val media: OneShotStream,
   }
 
   private def startPlayback() {
-    active = true
-    audioLine.start()
-    //    log.info(s"Starting playback of ${media.uri}")
-    playThread = Some(Future(startPlayThread()).recover({
-      // javazoom lib may throw at arbitrary playback moments
-      case e: ArrayIndexOutOfBoundsException =>
-        log warn(e.getClass.getName, e)
-        closeLine()
-        onPlaybackException(e)
-    }))
+    val changedToActive = active.compareAndSet(false, true)
+    if (changedToActive) {
+      audioLine.start()
+      //    log.info(s"Starting playback of ${media.uri}")
+      playThread = Some(Future(startPlayThread()).recover {
+        // javazoom lib may throw at arbitrary playback moments
+        case e: ArrayIndexOutOfBoundsException =>
+          log warn(e.getClass.getName, e)
+          closeLine()
+          onPlaybackException(e)
+      })
+    }
   }
 
   private def startPlayThread(): Unit = {
     val data = new Array[Byte](bufferSize)
     val END_OF_STREAM = -1
     var bytesRead = 0
-    while (bytesRead != END_OF_STREAM && active) {
+    while (bytesRead != END_OF_STREAM && isActive) {
       // blocks until audio data is available
       bytesRead = lineData.read(data)
       if (bytesRead != END_OF_STREAM) {
