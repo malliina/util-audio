@@ -12,7 +12,7 @@ scalaVersion := "2.12.3"
 crossScalaVersions := Seq("2.11.11", scalaVersion.value)
 releaseCrossBuild := true
 libraryDependencies ++= Seq(
-  malliinaGroup %% "util" % "2.8.0",
+  malliinaGroup %% "util" % "2.8.2",
   "org" % "jaudiotagger" % "2.0.3",
   soundGroup % "tritonus-share" % "0.3.7.4",
   soundGroup % "jlayer" % "1.0.1.4",
