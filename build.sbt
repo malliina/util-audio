@@ -13,7 +13,7 @@ releaseCrossBuild := true
 libraryDependencies ++= Seq(
   "commons-io" % "commons-io" % "2.6",
   "org.slf4j" % "slf4j-api" % "1.7.25",
-  malliinaGroup %% "util-base" % "1.4.1",
+  malliinaGroup %% "util-base" % "1.5.0",
   "org" % "jaudiotagger" % "2.0.3",
   soundGroup % "tritonus-share" % "0.3.7.4",
   soundGroup % "jlayer" % "1.0.1.4",
