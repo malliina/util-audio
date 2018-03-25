@@ -8,7 +8,7 @@ lazy val utilAudio = SbtProjects.mavenPublishProject("util-audio")
 organization := malliinaGroup
 SbtUtils.gitUserName := "malliina"
 SbtUtils.developerName := "Michael Skogberg"
-scalaVersion := "2.12.4"
+scalaVersion := "2.12.5"
 releaseCrossBuild := true
 libraryDependencies ++= Seq(
   "commons-io" % "commons-io" % "2.6",
